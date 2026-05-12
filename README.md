@@ -1,0 +1,2 @@
+# bitmapDB
+測試RoaringBitmap在mongodb和redis儲存和使用，那麼業務是以優惠券的領/用/查詢等動作做示範
