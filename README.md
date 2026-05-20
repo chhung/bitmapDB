@@ -39,6 +39,11 @@ deploy/
 --app.redis.mode=cluster
 ```
 
+## redis sentinel
+```
+--app.redis.mode=sentinel
+```
+
 ---
 
 ## 配置檔案說明
