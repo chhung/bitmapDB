@@ -28,7 +28,7 @@
 		mongodb.version 這個 property 控制，直接在 <properties>
 		覆寫它就能讓所有 MongoDB 元件統一使用同一版本
 		-->
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 		<mongodb.version>5.6.5</mongodb.version>
 	</properties>
 
