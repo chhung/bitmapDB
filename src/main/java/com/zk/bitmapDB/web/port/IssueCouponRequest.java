@@ -7,25 +7,25 @@ import java.util.List;
 
 public class IssueCouponRequest {
 
-    @NotBlank(message = "cpCode is required")
-    private String cpCode;
+    @NotEmpty(message = "cpCodes is required")
+    private List<String> cpCodes;
 
-    @NotEmpty(message = "issueCustNos is required")
-    private List<String> issueCustNos;
+    @NotBlank(message = "issueCustNo is required")
+    private String issueCustNo;
 
-    public String getCpCode() {
-        return cpCode;
+    public List<String> getCpCodes() {
+        return cpCodes;
     }
 
-    public void setCpCode(String cpCode) {
-        this.cpCode = cpCode;
+    public void setCpCodes(List<String> cpCodes) {
+        this.cpCodes = cpCodes;
     }
 
-    public List<String> getIssueCustNos() {
-        return issueCustNos;
+    public String getIssueCustNo() {
+        return issueCustNo;
     }
 
-    public void setIssueCustNos(List<String> issueCustNos) {
-        this.issueCustNos = issueCustNos;
+    public void setIssueCustNo(String issueCustNo) {
+        this.issueCustNo = issueCustNo;
     }
 }

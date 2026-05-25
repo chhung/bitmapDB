@@ -4,31 +4,26 @@ import java.util.List;
 
 public class IssueCouponResponse {
 
-    private String cpCode;
-    private int bitmapValue;
-    private int totalIssued;
-    private List<String> issuedCustNos;
+    private List<String> cpCodes;
+    private List<Integer> bitmapValues;
+    private String issueCustNo;
     private String message;
 
-    public IssueCouponResponse(String cpCode, int bitmapValue, List<String> issuedCustNos, String message) {
-        this.cpCode = cpCode;
-        this.bitmapValue = bitmapValue;
-        this.totalIssued = issuedCustNos.size();
-        this.issuedCustNos = issuedCustNos;
+    public IssueCouponResponse(List<String> cpCodes, List<Integer> bitmapValues, String issueCustNo, String message) {
+        this.cpCodes = cpCodes;
+        this.bitmapValues = bitmapValues;
+        this.issueCustNo = issueCustNo;
         this.message = message;
     }
 
-    public String getCpCode() { return cpCode; }
-    public void setCpCode(String cpCode) { this.cpCode = cpCode; }
+    public List<String> getCpCodes() { return cpCodes; }
+    public void setCpCodes(List<String> cpCodes) { this.cpCodes = cpCodes; }
 
-    public int getBitmapValue() { return bitmapValue; }
-    public void setBitmapValue(int bitmapValue) { this.bitmapValue = bitmapValue; }
+    public List<Integer> getBitmapValues() { return bitmapValues; }
+    public void setBitmapValues(List<Integer> bitmapValues) { this.bitmapValues = bitmapValues; }
 
-    public int getTotalIssued() { return totalIssued; }
-    public void setTotalIssued(int totalIssued) { this.totalIssued = totalIssued; }
-
-    public List<String> getIssuedCustNos() { return issuedCustNos; }
-    public void setIssuedCustNos(List<String> issuedCustNos) { this.issuedCustNos = issuedCustNos; }
+    public String getIssueCustNo() { return issueCustNo; }
+    public void setIssueCustNo(String issueCustNo) { this.issueCustNo = issueCustNo; }
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
