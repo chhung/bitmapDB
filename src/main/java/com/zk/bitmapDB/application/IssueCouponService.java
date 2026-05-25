@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Application service for issuing coupons.
@@ -40,34 +41,37 @@ public class IssueCouponService {
     }
 
     /**
-     * Issue a coupon to multiple customers.
+     * Issue multiple coupons to a single customer.
      *
-     * @param cpCode       coupon code string (e.g. "202211210121")
-     * @param issueCustNos list of customer number strings
-     * @return the bitmap integer value that was added
+     * @param cpCodes      list of coupon code strings
+     * @param issueCustNo  single customer number string
+     * @return list of bitmap integer values that were added
      */
-    public int issue(String cpCode, List<String> issueCustNos) {
-        int bitmapValue = encodeCpCode(cpCode);
+    public List<Integer> issue(List<String> cpCodes, String issueCustNo) {
+        long custNo = Long.parseLong(issueCustNo);
 
-        for (String custNoStr : issueCustNos) {
-            long custNo = Long.parseLong(custNoStr);
+        // 1. Load existing bitmap
+        RoaringBitmap bitmap = loadOrCreateBitmap(custNo);
 
-            // 1. Load existing bitmap, add new value
-            RoaringBitmap bitmap = loadOrCreateBitmap(custNo);
+        // 2. Encode each cpCode and add to bitmap
+        List<Integer> bitmapValues = new ArrayList<>();
+        for (String cpCode : cpCodes) {
+            int bitmapValue = encodeCpCode(cpCode);
             bitmap.add(bitmapValue);
-
-            // 2. Serialize
-            byte[] bitmapBytes = serializeBitmap(bitmap);
-
-            // 3. Write to MongoDB (upsert)
-            mongoPort.upsertBitmap(custNo, bitmapBytes);
-
-            // 4. Write to Redis
-            String redisKey = "user:" + custNoStr + ":received";
-            redisPort.writeBitmap(redisKey, bitmapBytes);
+            bitmapValues.add(bitmapValue);
         }
 
-        return bitmapValue;
+        // 3. Serialize once
+        byte[] bitmapBytes = serializeBitmap(bitmap);
+
+        // 4. Write to MongoDB (upsert)
+        mongoPort.upsertBitmap(custNo, bitmapBytes);
+
+        // 5. Write to Redis
+        String redisKey = "user:" + issueCustNo + ":received";
+        redisPort.writeBitmap(redisKey, bitmapBytes);
+
+        return bitmapValues;
     }
     private RoaringBitmap loadOrCreateBitmap(long custNo) {
         byte[] existing = mongoPort.findBitmap(custNo);
