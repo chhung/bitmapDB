@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTful API 軟體架構範本</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --secondary: #059669;
+            --accent: #d97706;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .layer {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .layer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .layer-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .layer-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .layer-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .layer-desc {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .layer-web { border-color: #3b82f6; background: #eff6ff; }
+        .layer-web .layer-badge { background: #3b82f6; }
+
+        .layer-app { border-color: #8b5cf6; background: #f5f3ff; }
+        .layer-app .layer-badge { background: #8b5cf6; }
+
+        .layer-domain { border-color: #059669; background: #ecfdf5; }
+        .layer-domain .layer-badge { background: #059669; }
+
+        .layer-repo { border-color: #d97706; background: #fffbeb; }
+        .layer-repo .layer-badge { background: #d97706; }
+
+        /* Directory Tree (inline in layer cards) */
+        .dir-tree {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        .dir-tree .folder { color: var(--primary); font-weight: 600; }
+        .dir-tree .file { color: var(--gray); }
+        .dir-tree .comment { color: #94a3b8; font-style: italic; }
+
+        /* Arrow between layers */
+        .arrow {
+            text-align: center;
+            color: var(--gray);
+            font-size: 1.5rem;
+            padding: 0.25rem 0;
+        }
+
+        /* Relationship Section */
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--dark);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            display: inline-block;
+        }
+
+        .rules {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rules li {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .rules li strong {
+            color: var(--primary);
+        }
+
+        /* Visual Tree Structure */
+        .tree-container {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 1rem;
+        }
+
+        .tree-node {
+            position: relative;
+            padding-left: 28px;
+            margin: 4px 0;
+        }
+
+        .tree-node::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background: #cbd5e1;
+        }
+
+        .tree-node::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 14px;
+            width: 14px;
+            height: 1px;
+            background: #cbd5e1;
+        }
+
+        .tree-node:last-child::before {
+            height: 14px;
+        }
+
+        .tree-root {
+            padding-left: 0;
+        }
+
+        .tree-root::before,
+        .tree-root::after {
+            display: none;
+        }
+
+        .tree-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+        }
+
+        .tree-label.is-folder {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tree-label.is-file {
+            background: #f1f5f9;
+            color: var(--gray);
+        }
+
+        .tree-label .icon {
+            font-size: 1rem;
+        }
+
+        .tree-label .note {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+
+        .tree-children {
+            padding-left: 0;
+        }
+
+        /* Color variants for different layers in tree */
+        .tree-label.layer-web-color { background: #dbeafe; color: #1d4ed8; }
+        .tree-label.layer-app-color { background: #ede9fe; color: #6d28d9; }
+        .tree-label.layer-domain-color { background: #d1fae5; color: #047857; }
+        .tree-label.layer-repo-color { background: #fef3c7; color: #b45309; }
+        .tree-label.layer-config-color { background: #fce7f3; color: #be185d; }
+
+        /* Flow Diagram */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            margin-top: 1.5rem;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .flow-box {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border: 2px solid;
+            text-align: center;
+        }
+
+        .flow-box-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .flow-box-desc {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .flow-box.fb-web { border-color: #3b82f6; background: #eff6ff; }
+        .flow-box.fb-app { border-color: #8b5cf6; background: #f5f3ff; }
+        .flow-box.fb-repo { border-color: #d97706; background: #fffbeb; }
+        .flow-box.fb-client { border-color: #64748b; background: #f8fafc; }
+
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem 0;
+            color: var(--gray);
+        }
+
+        .flow-arrow .arrow-line {
+            width: 2px;
+            height: 20px;
+            background: var(--gray);
+        }
+
+        .flow-arrow .arrow-text {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .flow-arrow .arrow-head {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            h1 { font-size: 1.5rem; }
+            .layer { padding: 1rem; }
+            .tree-container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RESTful API 軟體架構範本</h1>
+        <p class="subtitle">基於分層架構 (Layered Architecture) + Port/Adapter 模式</p>
+
+        <!-- Architecture Layers -->
+        <div class="arch-diagram">
+            <div class="layer layer-web">
+                <div class="layer-header">
+                    <span class="layer-badge">WEB</span>
+                    <span class="layer-title">Web Layer（表現層）</span>
+                </div>
+                <p class="layer-desc">負責接收 HTTP 請求、驗證輸入、轉換為內部物件，並呼叫 Application Layer 處理業務。回傳 Response DTO 給客戶端。</p>
+                <div class="dir-tree">
+                    <span class="folder">web/</span><br>
+                    &nbsp;&nbsp;<span class="file">XxxController.java</span> <span class="comment">── REST 端點，每個 Use Case 一個 Controller</span><br>
+                    &nbsp;&nbsp;<span class="folder">port/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">XxxRequest.java</span> <span class="comment">── 請求 DTO（含 Validation）</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">XxxResponse.java</span> <span class="comment">── 回應 DTO</span>
+                </div>
+            </div>
+
+            <div class="arrow">▼ 呼叫</div>
+
+            <div class="layer layer-app">
+                <div class="layer-header">
+                    <span class="layer-badge">APPLICATION</span>
+                    <span class="layer-title">Application Layer（應用層）</span>
+                </div>
+                <p class="layer-desc">協調業務流程，調度 Domain 物件和 Repository。透過 Port (Interface) 定義對外依賴，不直接依賴具體實作。</p>
+                <div class="dir-tree">
+                    <span class="folder">application/</span><br>
+                    &nbsp;&nbsp;<span class="file">XxxService.java</span> <span class="comment">── 業務流程協調者</span><br>
+                    &nbsp;&nbsp;<span class="folder">port/</span> <span class="comment">── 定義 Repository 的抽象介面</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">XxxPort.java</span> <span class="comment">── Interface，由 Repository 實作</span><br>
+                    &nbsp;&nbsp;<span class="folder">dto/</span> <span class="comment">── 層間傳遞用物件</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">XxxDto.java</span> <span class="comment">── 資料傳輸物件 / Value Object</span>
+                </div>
+            </div>
+
+            <div class="arrow">▼ 使用 Domain 物件 ＆ 呼叫 Port</div>
+
+            <div class="layer layer-domain">
+                <div class="layer-header">
+                    <span class="layer-badge">DOMAIN</span>
+                    <span class="layer-title">Domain Layer（領域層）</span>
+                </div>
+                <p class="layer-desc">核心業務邏輯。包含 Entity、Value Object、Aggregate Root。不依賴任何框架或基礎設施，純粹表達業務規則與行為。</p>
+                <div class="dir-tree">
+                    <span class="folder">domain/</span><br>
+                    &nbsp;&nbsp;<span class="file">XxxEntity.java</span> <span class="comment">── 實體，含業務行為與狀態</span><br>
+                    &nbsp;&nbsp;<span class="file">XxxValueObject.java</span> <span class="comment">── 值物件（不可變）</span>
+                </div>
+            </div>
+
+            <div class="arrow">▲ 被 Application 透過 Port 呼叫</div>
+
+            <div class="layer layer-repo">
+                <div class="layer-header">
+                    <span class="layer-badge">REPOSITORY</span>
+                    <span class="layer-title">Repository Layer（基礎設施層）</span>
+                </div>
+                <p class="layer-desc">實作 Application Port 定義的介面。負責實際的資料存取（DB、Redis、外部 API 等），將技術細節隔離在此層。</p>
+                <div class="dir-tree">
+                    <span class="folder">repository/</span><br>
+                    &nbsp;&nbsp;<span class="file">XxxRepo.java</span> <span class="comment">── 實作 application/port 中的 Interface</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dependency Rules -->
+        <h2 class="section-title">🔗 層間依賴規則</h2>
+        <ul class="rules">
+            <li><strong>Web → Application：</strong>Controller 注入 Service，將 Request DTO 轉為 Domain 物件後呼叫 Service 方法</li>
+            <li><strong>Application → Domain：</strong>Service 使用 Domain Entity/Value Object 來表達業務邏輯</li>
+            <li><strong>Application → Port (Interface)：</strong>Service 透過注入的 Port 介面操作資料，不知道具體實作</li>
+            <li><strong>Repository → Application Port：</strong>Repository 類別 implements Port 介面，提供具體資料存取實作</li>
+            <li><strong>禁止反向依賴：</strong>Domain 不依賴任何其他層；Application 不依賴 Web 或 Repository 具體類別</li>
+        </ul>
+
+        <!-- Full Directory Template (Visual Tree) -->
+        <h2 class="section-title">📁 完整目錄結構範本</h2>
+        <div class="tree-container" id="tree-container"></div>
+
+        <!-- Data Flow -->
+        <h2 class="section-title">🔄 請求處理流程</h2>
+        <div class="flow-container">
+            <div class="flow-step">
+                <div class="flow-box fb-client">
+                    <div class="flow-box-title">HTTP Request</div>
+                    <div class="flow-box-desc">客戶端發送請求</div>
+                </div>
+            </div>
+            <div class="flow-arrow">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-box fb-web">
+                    <div class="flow-box-title">Web Layer — Controller</div>
+                    <div class="flow-box-desc">驗證 Request DTO → 轉換為 Domain 物件</div>
+                </div>
+            </div>
+            <div class="flow-arrow">
+                <div class="arrow-line"></div>
+                <div class="arrow-text">呼叫 Service</div>
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-box fb-app">
+                    <div class="flow-box-title">Application Layer — Service</div>
+                    <div class="flow-box-desc">使用 Domain 物件處理邏輯 → 透過 Port 介面存取資料</div>
+                </div>
+            </div>
+            <div class="flow-arrow">
+                <div class="arrow-line"></div>
+                <div class="arrow-text">呼叫 Port 實作</div>
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-box fb-repo">
+                    <div class="flow-box-title">Repository Layer — Repo</div>
+                    <div class="flow-box-desc">操作 DB / Cache / 外部服務</div>
+                </div>
+            </div>
+            <div class="flow-arrow">
+                <div class="arrow-line"></div>
+                <div class="arrow-text">回傳結果</div>
+                <div class="arrow-line"></div>
+                <div class="arrow-head" style="transform: rotate(180deg);"></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-box fb-client">
+                    <div class="flow-box-title">HTTP Response</div>
+                    <div class="flow-box-desc">Controller 組裝 Response DTO 回傳</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tree data structure
+        const treeData = {
+            name: 'src/main/java/com/yourcompany/project/',
+            type: 'folder',
+            colorClass: '',
+            children: [
+                { name: 'Application.java', type: 'file', note: 'Spring Boot 啟動類' },
+                {
+                    name: 'config/', type: 'folder', colorClass: 'layer-config-color',
+                    note: '框架配置',
+                    children: [
+                        { name: 'DatabaseConfig.java', type: 'file' },
+                        { name: 'CorsConfig.java', type: 'file' },
+                        { name: 'XxxSettings.java', type: 'file', note: '@ConfigurationProperties' }
+                    ]
+                },
+                {
+                    name: 'web/', type: 'folder', colorClass: 'layer-web-color',
+                    note: '表現層',
+                    children: [
+                        { name: 'XxxController.java', type: 'file', note: '@RestController' },
+                        {
+                            name: 'port/', type: 'folder', colorClass: 'layer-web-color',
+                            note: 'Web 層 DTO',
+                            children: [
+                                { name: 'XxxRequest.java', type: 'file', note: '請求物件 + Validation' },
+                                { name: 'XxxResponse.java', type: 'file', note: '回應物件' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: 'application/', type: 'folder', colorClass: 'layer-app-color',
+                    note: '應用層',
+                    children: [
+                        { name: 'XxxService.java', type: 'file', note: '@Service 業務協調' },
+                        {
+                            name: 'port/', type: 'folder', colorClass: 'layer-app-color',
+                            note: '抽象介面（依賴反轉）',
+                            children: [
+                                { name: 'XxxPort.java', type: 'file', note: 'interface' }
+                            ]
+                        },
+                        {
+                            name: 'dto/', type: 'folder', colorClass: 'layer-app-color',
+                            note: '傳輸物件',
+                            children: [
+                                { name: 'XxxDto.java', type: 'file', note: '資料傳輸物件' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: 'domain/', type: 'folder', colorClass: 'layer-domain-color',
+                    note: '領域層（純業務）',
+                    children: [
+                        { name: 'XxxEntity.java', type: 'file', note: 'Entity / Aggregate Root' },
+                        { name: 'XxxValueObject.java', type: 'file', note: 'Value Object' }
+                    ]
+                },
+                {
+                    name: 'repository/', type: 'folder', colorClass: 'layer-repo-color',
+                    note: '基礎設施層',
+                    children: [
+                        { name: 'XxxRepo.java', type: 'file', note: '@Repository implements Port' }
+                    ]
+                }
+            ]
+        };
+
+        function buildTree(node, isRoot) {
+            const el = document.createElement('div');
+            el.className = 'tree-node' + (isRoot ? ' tree-root' : '');
+
+            const label = document.createElement('span');
+            label.className = 'tree-label' + (node.type === 'folder' ? ' is-folder' : ' is-file');
+            if (node.colorClass) {
+                label.classList.add(node.colorClass);
+            }
+
+            const icon = document.createElement('span');
+            icon.className = 'icon';
+            icon.textContent = node.type === 'folder' ? '📂' : '📄';
+            label.appendChild(icon);
+
+            const text = document.createTextNode(node.name);
+            label.appendChild(text);
+
+            if (node.note) {
+                const note = document.createElement('span');
+                note.className = 'note';
+                note.textContent = node.note;
+                label.appendChild(note);
+            }
+
+            el.appendChild(label);
+
+            if (node.children) {
+                const childrenContainer = document.createElement('div');
+                childrenContainer.className = 'tree-children';
+                node.children.forEach(function(child) {
+                    childrenContainer.appendChild(buildTree(child, false));
+                });
+                el.appendChild(childrenContainer);
+            }
+
+            return el;
+        }
+
+        document.getElementById('tree-container').appendChild(buildTree(treeData, true));
+    </script>
+</body>
+</html>

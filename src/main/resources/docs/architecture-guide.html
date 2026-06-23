@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clean Port-Adapter Layered Architecture — 設計說明書</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #dbeafe;
+            --purple: #6d28d9;
+            --purple-light: #ede9fe;
+            --green: #047857;
+            --green-light: #d1fae5;
+            --amber: #b45309;
+            --amber-light: #fef3c7;
+            --rose: #be185d;
+            --dark: #0f172a;
+            --gray-900: #1e293b;
+            --gray-700: #374151;
+            --gray-500: #6b7280;
+            --gray-300: #d1d5db;
+            --gray-100: #f3f4f6;
+            --white: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Noto Serif TC', serif;
+            line-height: 1.9;
+            color: var(--gray-900);
+            background: var(--white);
+            padding: 0;
+        }
+
+        /* Header */
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hero .tagline {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .hero .author {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Table of Contents */
+        .toc {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem 2.5rem;
+            background: var(--gray-100);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .toc h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .toc ol {
+            padding-left: 1.5rem;
+        }
+
+        .toc li {
+            margin: 0.4rem 0;
+        }
+
+        .toc a {
+            color: var(--gray-700);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--gray-300);
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .chapter {
+            margin: 4rem 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .chapter:first-child {
+            border-top: none;
+            margin-top: 2rem;
+        }
+
+        .chapter-number {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter h2 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .chapter h3 {
+            font-size: 1.3rem;
+            color: var(--gray-700);
+            margin: 2rem 0 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+        }
+
+        /* Blockquote - like a book epigraph */
+        blockquote {
+            margin: 2rem 0;
+            padding: 1.5rem 2rem;
+            background: var(--gray-100);
+            border-left: 4px solid var(--purple);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--gray-700);
+        }
+
+        blockquote cite {
+            display: block;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            font-style: normal;
+            color: var(--gray-500);
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--dark);
+            color: #e2e8f0;
+            border-radius: 10px;
+            padding: 1.5rem 2rem;
+            overflow-x: auto;
+            font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            margin: 1.5rem 0;
+        }
+
+        pre .keyword { color: #c084fc; }
+        pre .type { color: #67e8f9; }
+        pre .annotation { color: #fbbf24; }
+        pre .string { color: #86efac; }
+        pre .comment { color: #6b7280; font-style: italic; }
+        pre .interface { color: #f472b6; }
+
+        code {
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--gray-100);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            color: var(--purple);
+        }
+
+        /* Diagram containers */
+        .diagram {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .diagram-title {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        /* Concentric circles diagram */
+        .concentric {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .ring {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .ring-outer {
+            width: 380px;
+            height: 380px;
+            background: var(--amber-light);
+            border: 3px solid var(--amber);
+        }
+
+        .ring-mid-outer {
+            width: 290px;
+            height: 290px;
+            background: var(--primary-light);
+            border: 3px solid var(--primary);
+        }
+
+        .ring-mid {
+            width: 200px;
+            height: 200px;
+            background: var(--purple-light);
+            border: 3px solid var(--purple);
+        }
+
+        .ring-core {
+            width: 110px;
+            height: 110px;
+            background: var(--green-light);
+            border: 3px solid var(--green);
+        }
+
+        .ring-label {
+            position: absolute;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .ring-outer > .ring-label { top: 12px; left: 50%; transform: translateX(-50%); color: var(--amber); }
+        .ring-mid-outer > .ring-label { top: 10px; left: 50%; transform: translateX(-50%); color: var(--primary); }
+        .ring-mid > .ring-label { top: 8px; left: 50%; transform: translateX(-50%); color: var(--purple); }
+        .ring-core > .ring-label { color: var(--green); font-size: 0.65rem; text-align: center; line-height: 1.4; }
+
+        /* Dependency arrow diagram */
+        .dep-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dep-box {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            width: 280px;
+        }
+
+        .dep-box.web { background: var(--primary-light); color: var(--primary); border: 2px solid var(--primary); }
+        .dep-box.app { background: var(--purple-light); color: var(--purple); border: 2px solid var(--purple); }
+        .dep-box.domain { background: var(--green-light); color: var(--green); border: 2px solid var(--green); }
+        .dep-box.repo { background: var(--amber-light); color: var(--amber); border: 2px solid var(--amber); }
+
+        .dep-arrow {
+            color: var(--gray-500);
+            font-size: 1.2rem;
+        }
+
+        .dep-note {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-style: italic;
+        }
+
+        /* Principle cards */
+        .principles {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .principle-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .principle-card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .principle-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            color: var(--gray-700);
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.85rem;
+        }
+
+        .comparison-table th {
+            background: var(--gray-900);
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:nth-child(even) td {
+            background: var(--gray-100);
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            margin: 2rem 0;
+            padding: 1.5rem 2rem;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+
+        .highlight-box.warning {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .highlight-box.info {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .highlight-box.success {
+            border-color: var(--green);
+            background: var(--green-light);
+        }
+
+        .highlight-box h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .highlight-box.warning h4 { color: #dc2626; }
+        .highlight-box.info h4 { color: var(--primary); }
+        .highlight-box.success h4 { color: var(--green); }
+
+        .highlight-box ul {
+            padding-left: 1.5rem;
+            margin: 0;
+        }
+
+        .highlight-box li {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+        }
+
+        /* Sequence diagram */
+        .sequence {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+            margin: 1.5rem 0;
+            font-size: 0.85rem;
+        }
+
+        .seq-participants {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .seq-participant {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .seq-step {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-top: 1px dashed var(--gray-300);
+        }
+
+        .seq-cell {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--gray-700);
+            padding: 0.25rem;
+            min-height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seq-cell.active {
+            background: var(--primary-light);
+            border-radius: 4px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .seq-cell.active-purple {
+            background: var(--purple-light);
+            border-radius: 4px;
+            font-weight: 500;
+            color: var(--purple);
+        }
+
+        .seq-cell.active-green {
+            background: var(--green-light);
+            border-radius: 4px;
+            font-weight: 500;
+            color: var(--green);
+        }
+
+        .seq-cell.active-amber {
+            background: var(--amber-light);
+            border-radius: 4px;
+            font-weight: 500;
+            color: var(--amber);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { padding: 2.5rem 1.5rem; }
+            .hero h1 { font-size: 1.8rem; }
+            .content { padding: 1.5rem; }
+            .ring-outer { width: 280px; height: 280px; }
+            .ring-mid-outer { width: 210px; height: 210px; }
+            .ring-mid { width: 150px; height: 150px; }
+            .ring-core { width: 85px; height: 85px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <header class="hero">
+        <h1>Clean Port-Adapter Layered Architecture</h1>
+        <p class="tagline">「讓業務邏輯活在框架與資料庫之外，<br>讓每一層只知道它該知道的事。」</p>
+        <p class="author">A Practical Architecture for RESTful API Systems</p>
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="toc">
+        <h2>目 錄</h2>
+        <ol>
+            <li><a href="#ch1">設計哲學 — 為什麼需要分層？</a></li>
+            <li><a href="#ch2">核心原則</a></li>
+            <li><a href="#ch3">四層架構總覽</a></li>
+            <li><a href="#ch4">Web Layer（表現層）</a></li>
+            <li><a href="#ch5">Application Layer（應用層）</a></li>
+            <li><a href="#ch6">Domain Layer（領域層）</a></li>
+            <li><a href="#ch7">Repository Layer（基礎設施層）</a></li>
+            <li><a href="#ch8">Port & Adapter 機制詳解</a></li>
+            <li><a href="#ch9">完整請求生命週期</a></li>
+            <li><a href="#ch10">實作範例 — Use Coupon</a></li>
+            <li><a href="#ch11">實作範例 — Issue Coupon（多 Port 協調）</a></li>
+            <li><a href="#ch12">命名慣例與檔案放置</a></li>
+            <li><a href="#ch13">禁忌與反模式</a></li>
+            <li><a href="#ch14">與經典架構的對照</a></li>
+        </ol>
+    </nav>
+
+    <!-- Content -->
+    <main class="content">
+
+        <!-- Chapter 1 -->
+        <section class="chapter" id="ch1">
+            <div class="chapter-number">Chapter 1</div>
+            <h2>設計哲學 — 為什麼需要分層？</h2>
+
+            <blockquote>
+                "The center of your application is not the database. Nor is it one or more of the frameworks you may be using. The center of your application is the use cases of your application."
+                <cite>— Robert C. Martin, Clean Architecture (2017)</cite>
+            </blockquote>
+
+            <p>
+                當一個 RESTful API 專案從簡單的 CRUD 逐漸成長，最常遇到的問題是：<strong>Controller 變成上帝類別</strong>——它同時做驗證、業務邏輯、資料存取、回應組裝。一旦要更換資料庫、增加快取、或修改業務規則，你必須翻動整個 Controller，牽一髮而動全身。
+            </p>
+
+            <p>
+                本架構的核心信念是：
+            </p>
+
+            <div class="principles">
+                <div class="principle-card">
+                    <h4>🎯 關注點分離 (Separation of Concerns)</h4>
+                    <p>每一層只負責一件事。Controller 不碰資料庫，Repository 不做業務判斷，Domain 不知道 HTTP 的存在。</p>
+                </div>
+                <div class="principle-card">
+                    <h4>🔄 依賴方向單一且可控</h4>
+                    <p>外層可以知道內層，內層絕不知道外層。Domain 是宇宙的中心，它不依賴任何人。</p>
+                </div>
+                <div class="principle-card">
+                    <h4>🔌 可替換的基礎設施</h4>
+                    <p>透過 Port (Interface) 定義契約，Repository 只是「插進去的一個實作」。今天用 MongoDB，明天換 PostgreSQL，Application 層一行都不用改。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 2 -->
+        <section class="chapter" id="ch2">
+            <div class="chapter-number">Chapter 2</div>
+            <h2>核心原則</h2>
+
+            <h3>依賴反轉原則 (Dependency Inversion Principle)</h3>
+            <p>
+                高層模組不應該依賴低層模組，兩者都應該依賴抽象。在本架構中，Application Layer 定義 Port（Interface），Repository Layer 實作它。Application 永遠只面對介面程式設計，從不直接 new 出一個 Repository。
+            </p>
+
+            <h3>單一職責原則 (Single Responsibility Principle)</h3>
+            <p>
+                每個 Controller 只處理一個 Use Case。每個 Service 協調一個業務流程。每個 Repository 負責一種資料存取。當需求變更時，你可以精確定位到該改哪一個類別。
+            </p>
+
+            <h3>介面隔離原則 (Interface Segregation Principle)</h3>
+            <p>
+                Port 按照使用者（Service）的需求來切割，而不是按照實作方的方便。一個 Service 需要「寫入 bitmap」和「讀取 bitmap」兩件事，就定義兩個方法的 Port，不會塞入 20 個不相關的方法。
+            </p>
+
+            <div class="diagram">
+                <div class="diagram-title">圖 2-1：依賴方向 — 箭頭表示「知道/依賴」</div>
+                <div class="dep-flow">
+                    <div class="dep-box web">Web Layer (Controller + DTO)</div>
+                    <div class="dep-arrow">↓ depends on</div>
+                    <div class="dep-box app">Application Layer (Service)</div>
+                    <div class="dep-arrow">↓ depends on</div>
+                    <div class="dep-box domain">Domain Layer (Entity / Value Object)</div>
+                    <div class="dep-arrow" style="margin-top: 1.5rem;">↑ implements</div>
+                    <div class="dep-box repo">Repository Layer (Concrete Impl)</div>
+                    <div class="dep-note">Repository 實作 Application 定義的 Port Interface</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 3 -->
+        <section class="chapter" id="ch3">
+            <div class="chapter-number">Chapter 3</div>
+            <h2>四層架構總覽</h2>
+
+            <div class="diagram">
+                <div class="diagram-title">圖 3-1：同心圓模型 — 越內層越穩定、越抽象</div>
+                <div class="concentric">
+                    <div class="ring ring-outer">
+                        <span class="ring-label">REPOSITORY（基礎設施）</span>
+                        <div class="ring ring-mid-outer">
+                            <span class="ring-label">WEB（表現層）</span>
+                            <div class="ring ring-mid">
+                                <span class="ring-label">APPLICATION</span>
+                                <div class="ring ring-core">
+                                    <span class="ring-label">DOMAIN<br>核心</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>層次</th>
+                        <th>職責</th>
+                        <th>典型類別</th>
+                        <th>允許依賴</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Web</strong></td>
+                        <td>HTTP 端點、輸入驗證、DTO 轉換</td>
+                        <td>Controller, Request, Response</td>
+                        <td>Application, Domain</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Application</strong></td>
+                        <td>業務流程編排、Port 定義</td>
+                        <td>Service, Port (Interface), DTO</td>
+                        <td>Domain</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Domain</strong></td>
+                        <td>核心業務規則與行為</td>
+                        <td>Entity, Value Object</td>
+                        <td>無（純 POJO）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repository</strong></td>
+                        <td>資料存取實作</td>
+                        <td>XxxRepo (implements Port)</td>
+                        <td>Application Port, Domain</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Chapter 4 -->
+        <section class="chapter" id="ch4">
+            <div class="chapter-number">Chapter 4</div>
+            <h2>Web Layer（表現層）</h2>
+
+            <p>
+                Web Layer 是系統的「門面」，它唯一的工作是：<strong>接收 HTTP、驗證格式、轉換物件、呼叫 Service、組裝回應</strong>。它不包含任何業務邏輯判斷。
+            </p>
+
+            <h3>Controller — 一個 Use Case 一個 Controller</h3>
+            <p>
+                不採用一個大 Controller 包 N 個方法的做法。每個 Controller 只有一個公開方法，對應一個明確的業務用例。這讓每個 Controller 極度精簡且職責單一。
+            </p>
+
+<pre>
+<span class="annotation">@RestController</span>
+<span class="keyword">public class</span> <span class="type">UseCouponController</span> {
+
+    <span class="keyword">private final</span> <span class="type">UseCouponService</span> service;
+
+    <span class="keyword">public</span> UseCouponController(<span class="type">UseCouponService</span> service) {
+        <span class="keyword">this</span>.service = service;
+    }
+
+    <span class="annotation">@PostMapping</span>(<span class="string">"/coupons/use"</span>)
+    <span class="keyword">public</span> <span class="type">UseCouponResponse</span> use(<span class="annotation">@RequestBody @Valid</span> <span class="type">UseCouponRequest</span> req) {
+        <span class="comment">// 1. 從 Request DTO 取值，轉為 Application 層能理解的物件</span>
+        <span class="keyword">var</span> result = service.use(
+            <span class="keyword">new</span> <span class="type">UserId</span>(req.getUserId()),
+            <span class="keyword">new</span> <span class="type">CouponId</span>(req.getCouponId())
+        );
+        <span class="comment">// 2. 組裝 Response DTO 回傳</span>
+        <span class="keyword">return new</span> <span class="type">UseCouponResponse</span>(result);
+    }
+}
+</pre>
+
+            <h3>port/ 子目錄 — Request & Response DTO</h3>
+            <p>
+                所有進出 Web 層的資料物件統一放在 <code>web/port/</code> 下。Request 物件承載驗證邏輯（<code>@NotBlank</code>、<code>@NotEmpty</code> 等），Response 物件定義 API 回傳格式。這些 DTO 只存在於 Web 層，不會滲透到其他層。
+            </p>
+
+<pre>
+<span class="keyword">public class</span> <span class="type">UseCouponRequest</span> {
+    <span class="annotation">@NotBlank</span>
+    <span class="keyword">private</span> String couponId;
+    <span class="annotation">@NotBlank</span>
+    <span class="keyword">private</span> String userId;
+    <span class="comment">// getters & setters</span>
+}
+</pre>
+
+            <div class="highlight-box info">
+                <h4>💡 設計要點</h4>
+                <ul>
+                    <li>Controller 不做 <code>if/else</code> 業務判斷</li>
+                    <li>Controller 不直接操作 Repository</li>
+                    <li>Request/Response DTO 只在 Web 層使用，不傳入 Service</li>
+                    <li>轉換過程在 Controller 中完成：Request → Domain Object → Service 呼叫</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Chapter 5 -->
+        <section class="chapter" id="ch5">
+            <div class="chapter-number">Chapter 5</div>
+            <h2>Application Layer（應用層）</h2>
+
+            <p>
+                Application Layer 是整個系統的「指揮官」。它不直接做事，而是<strong>協調</strong>：告訴 Domain 物件做業務邏輯，告訴 Repository（透過 Port）去存取資料。它像一個劇本導演——不演戲，但決定誰在什麼時候上場。
+            </p>
+
+            <h3>Service — 業務流程協調者</h3>
+
+<pre>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">UseCouponService</span> {
+
+    <span class="keyword">private final</span> <span class="interface">UseCoupon</span> repo;  <span class="comment">// Port (Interface)，不是具體類別</span>
+
+    <span class="keyword">public</span> UseCouponService(<span class="interface">UseCoupon</span> repo) {
+        <span class="keyword">this</span>.repo = repo;
+    }
+
+    <span class="keyword">public</span> Object use(<span class="type">UserId</span> userId, <span class="type">CouponId</span> couponId) {
+        <span class="comment">// 1. 透過 Port 取得 Domain 物件</span>
+        <span class="type">Coupon</span> c = repo.find(couponId);
+        <span class="comment">// 2. 呼叫 Domain 物件的業務方法</span>
+        c.use(userId.getId());
+        <span class="comment">// 3. 透過 Port 持久化</span>
+        repo.save(c);
+        <span class="keyword">return null</span>;
+    }
+}
+</pre>
+
+            <h3>port/ 子目錄 — 抽象介面（依賴反轉的關鍵）</h3>
+            <p>
+                Port 是 Application 層對外部世界的「契約宣告」。它說：「我需要一個能 find 和 save Coupon 的東西」，至於是 MongoDB、MySQL、還是記憶體實作，它不在乎。
+            </p>
+
+<pre>
+<span class="keyword">public interface</span> <span class="interface">UseCoupon</span> {
+    <span class="type">Coupon</span> find(<span class="type">CouponId</span> couponId);
+    <span class="keyword">void</span> save(<span class="type">Coupon</span> c);
+}
+</pre>
+
+            <h3>dto/ 子目錄 — 層間傳遞物件</h3>
+            <p>
+                當原始型別（String）不足以表達語意時，用 DTO 或 Value Object 包裝。<code>UserId</code> 和 <code>CouponId</code> 就是這樣的角色——它們讓方法簽名自我說明，避免參數順序搞混。
+            </p>
+
+<pre>
+<span class="keyword">public class</span> <span class="type">CouponId</span> {
+    <span class="keyword">private</span> String id;
+
+    <span class="keyword">public</span> CouponId(String id) {
+        <span class="keyword">this</span>.id = id;
+    }
+    <span class="comment">// getter</span>
+}
+</pre>
+        </section>
+
+        <!-- Chapter 6 -->
+        <section class="chapter" id="ch6">
+            <div class="chapter-number">Chapter 6</div>
+            <h2>Domain Layer（領域層）</h2>
+
+            <blockquote>
+                "Domain 才是真正的業務邏輯區域，它包含了業務邏輯的核心概念和規則。它不做跟 infra 或 service layer 有關的事情，就是一個類別做好自己的事。"
+                <cite>— 本專案 Coupon.java 中的原始註解</cite>
+            </blockquote>
+
+            <p>
+                Domain Layer 是整個架構中<strong>最穩定、最純粹</strong>的一層。它不依賴 Spring、不依賴資料庫驅動、不依賴任何框架。它是純粹的 Java 類別，只表達「這個業務世界是什麼樣子」以及「業務規則是什麼」。
+            </p>
+
+            <h3>Entity — 有身份、有行為的業務物件</h3>
+
+<pre>
+<span class="keyword">public class</span> <span class="type">Coupon</span> {
+    <span class="keyword">private</span> String couponId;
+    <span class="keyword">private</span> String userId;
+    <span class="keyword">private boolean</span> used;
+
+    <span class="keyword">public</span> Coupon(String couponId, String userId) {
+        <span class="keyword">this</span>.couponId = couponId;
+    }
+
+    <span class="comment">// 業務行為：核銷優惠券</span>
+    <span class="keyword">public void</span> use(String userId) {
+        used = <span class="keyword">true</span>;
+        <span class="keyword">this</span>.userId = userId;
+    }
+}
+</pre>
+
+            <p>
+                注意 <code>use()</code> 方法。核銷的邏輯寫在 Domain 物件自身——這是 Domain-Driven Design 的核心精神：<strong>行為跟著資料走</strong>，而不是把邏輯散落在 Service 或 Controller 中。
+            </p>
+
+            <div class="highlight-box success">
+                <h4>✅ Domain 層的特徵</h4>
+                <ul>
+                    <li>零框架依賴（沒有 @Service、@Repository、@Autowired）</li>
+                    <li>可以用純 JUnit 測試，不需啟動 Spring Context</li>
+                    <li>類別自己管理自己的狀態一致性</li>
+                    <li>業務規則的「唯一真理來源」</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Chapter 7 -->
+        <section class="chapter" id="ch7">
+            <div class="chapter-number">Chapter 7</div>
+            <h2>Repository Layer（基礎設施層）</h2>
+
+            <p>
+                Repository Layer 是「髒活」的所在地——所有跟具體技術相關的事情都在這裡：SQL、MongoDB Driver API、Redis Client、HTTP Client 呼叫外部服務。它的存在意義是：<strong>把技術細節關在籠子裡，不讓它污染業務邏輯</strong>。
+            </p>
+
+            <h3>實作 Port Interface</h3>
+
+<pre>
+<span class="annotation">@Repository</span>
+<span class="keyword">public class</span> <span class="type">UseCouponRepo</span> <span class="keyword">implements</span> <span class="interface">UseCoupon</span> {
+
+    <span class="keyword">public</span> <span class="type">Coupon</span> find(<span class="type">CouponId</span> couponId) {
+        <span class="comment">// 具體的 DB 查詢邏輯</span>
+        <span class="comment">// MongoDB / JPA / JDBC ... 在這裡做</span>
+    }
+
+    <span class="keyword">public void</span> save(<span class="type">Coupon</span> c) {
+        <span class="comment">// 具體的 DB 寫入邏輯</span>
+    }
+}
+</pre>
+
+            <p>
+                Spring 的依賴注入會自動將這個 <code>@Repository</code> 類別注入到 Service 中宣告的 <code>UseCoupon</code> 介面欄位。Service 永遠不知道背後是 MongoDB 還是 MySQL——這就是依賴反轉的威力。
+            </p>
+        </section>
+
+        <!-- Chapter 8 -->
+        <section class="chapter" id="ch8">
+            <div class="chapter-number">Chapter 8</div>
+            <h2>Port & Adapter 機制詳解</h2>
+
+            <blockquote>
+                "Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases."
+                <cite>— Alistair Cockburn, Hexagonal Architecture (2005)</cite>
+            </blockquote>
+
+            <p>
+                本架構借鑑 Cockburn 的 Hexagonal Architecture，使用「Port」和「Adapter」來切斷層與層之間的編譯期耦合：
+            </p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>概念</th>
+                        <th>在本架構中的對應</th>
+                        <th>位置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Port</strong></td>
+                        <td>Interface（如 <code>UseCoupon</code>, <code>IssueCouponRedis</code>）</td>
+                        <td><code>application/port/</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adapter</strong></td>
+                        <td>具體實作（如 <code>UseCouponRepo</code>, <code>IssueCouponRedisRepo</code>）</td>
+                        <td><code>repository/</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Driving Side</strong></td>
+                        <td>Controller（驅動應用程式的外部力量）</td>
+                        <td><code>web/</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Driven Side</strong></td>
+                        <td>Repository（被應用程式驅動的外部資源）</td>
+                        <td><code>repository/</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                Port 的定義權在 Application 層（內層），實作責任在 Repository 層（外層）。這確保了<strong>依賴箭頭指向內層</strong>——外層實作內層定義的契約，而不是內層去配合外層的 API。
+            </p>
+        </section>
+
+        <!-- Chapter 9 -->
+        <section class="chapter" id="ch9">
+            <div class="chapter-number">Chapter 9</div>
+            <h2>完整請求生命週期</h2>
+
+            <p>以「核銷優惠券」為例，一個 HTTP 請求從進入到離開系統的完整旅程：</p>
+
+            <div class="diagram">
+                <div class="diagram-title">圖 9-1：請求生命週期序列</div>
+                <div class="sequence">
+                    <div class="seq-participants">
+                        <div class="seq-participant" style="background: var(--primary-light); color: var(--primary);">Controller</div>
+                        <div class="seq-participant" style="background: var(--purple-light); color: var(--purple);">Service</div>
+                        <div class="seq-participant" style="background: var(--green-light); color: var(--green);">Domain</div>
+                        <div class="seq-participant" style="background: var(--amber-light); color: var(--amber);">Repository</div>
+                    </div>
+                    <div class="seq-step">
+                        <div class="seq-cell active">① 接收 Request<br>驗證 DTO</div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell"></div>
+                    </div>
+                    <div class="seq-step">
+                        <div class="seq-cell active">② 轉換為<br>UserId + CouponId</div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell"></div>
+                    </div>
+                    <div class="seq-step">
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell active-purple">③ 呼叫 Port<br>取得 Coupon</div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell active-amber">find()</div>
+                    </div>
+                    <div class="seq-step">
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell active-purple">④ 呼叫 Domain<br>業務方法</div>
+                        <div class="seq-cell active-green">coupon.use()</div>
+                        <div class="seq-cell"></div>
+                    </div>
+                    <div class="seq-step">
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell active-purple">⑤ 呼叫 Port<br>持久化</div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell active-amber">save()</div>
+                    </div>
+                    <div class="seq-step">
+                        <div class="seq-cell active">⑥ 組裝 Response<br>回傳 HTTP</div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell"></div>
+                        <div class="seq-cell"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 10 -->
+        <section class="chapter" id="ch10">
+            <div class="chapter-number">Chapter 10</div>
+            <h2>實作範例 — Use Coupon（單一 Port）</h2>
+
+            <p>這是最基礎的模式：一個 Controller → 一個 Service → 一個 Port → 一個 Repository。</p>
+
+            <h3>檔案清單</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>層</th>
+                        <th>檔案</th>
+                        <th>角色</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Web</td>
+                        <td><code>CouponController.java</code></td>
+                        <td>POST /coupons/use 端點</td>
+                    </tr>
+                    <tr>
+                        <td>Web</td>
+                        <td><code>web/port/UseCouponRequest.java</code></td>
+                        <td>輸入驗證</td>
+                    </tr>
+                    <tr>
+                        <td>Web</td>
+                        <td><code>web/port/UseCouponResponse.java</code></td>
+                        <td>回應格式</td>
+                    </tr>
+                    <tr>
+                        <td>Application</td>
+                        <td><code>UseCouponService.java</code></td>
+                        <td>協調 find → use → save</td>
+                    </tr>
+                    <tr>
+                        <td>Application</td>
+                        <td><code>application/port/UseCoupon.java</code></td>
+                        <td>Port Interface</td>
+                    </tr>
+                    <tr>
+                        <td>Application</td>
+                        <td><code>application/dto/UserId.java</code></td>
+                        <td>Value Object</td>
+                    </tr>
+                    <tr>
+                        <td>Application</td>
+                        <td><code>application/dto/CouponId.java</code></td>
+                        <td>Value Object</td>
+                    </tr>
+                    <tr>
+                        <td>Domain</td>
+                        <td><code>domain/Coupon.java</code></td>
+                        <td>Entity + 業務行為</td>
+                    </tr>
+                    <tr>
+                        <td>Repository</td>
+                        <td><code>UseCouponRepo.java</code></td>
+                        <td>implements UseCoupon</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                這個範例展示了最純粹的 Port-Adapter 模式：Service 注入 <code>UseCoupon</code> 介面，透過它取得 Domain 物件，執行業務邏輯，再透過它持久化。整個流程中 Service 完全不知道背後是什麼資料庫。
+            </p>
+        </section>
+
+        <!-- Chapter 11 -->
+        <section class="chapter" id="ch11">
+            <div class="chapter-number">Chapter 11</div>
+            <h2>實作範例 — Issue Coupon（多 Port 協調）</h2>
+
+            <p>
+                真實世界中，一個業務操作往往需要操作多個基礎設施。「發放優惠券」需要同時寫入 MongoDB（持久化）和 Redis（快取加速查詢）。本架構優雅地處理這個場景：<strong>定義多個 Port，由 Service 協調</strong>。
+            </p>
+
+<pre>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">IssueCouponService</span> {
+
+    <span class="keyword">private final</span> <span class="interface">IssueCouponMongo</span> mongoPort;   <span class="comment">// Port 1: MongoDB</span>
+    <span class="keyword">private final</span> <span class="interface">IssueCouponRedis</span> redisPort;   <span class="comment">// Port 2: Redis</span>
+
+    <span class="keyword">public</span> IssueCouponService(<span class="interface">IssueCouponMongo</span> mongoPort,
+                              <span class="interface">IssueCouponRedis</span> redisPort) {
+        <span class="keyword">this</span>.mongoPort = mongoPort;
+        <span class="keyword">this</span>.redisPort = redisPort;
+    }
+
+    <span class="keyword">public int</span> issue(String cpCode, List&lt;String&gt; custNos) {
+        <span class="keyword">int</span> bitmapValue = encodeCpCode(cpCode);
+
+        <span class="keyword">for</span> (String custNo : custNos) {
+            RoaringBitmap bitmap = loadOrCreateBitmap(custNo);
+            bitmap.add(bitmapValue);
+            <span class="keyword">byte</span>[] bytes = serializeBitmap(bitmap);
+
+            <span class="comment">// 協調兩個 Port 完成寫入</span>
+            mongoPort.upsertBitmap(custNo, bytes);  <span class="comment">// 持久層</span>
+            redisPort.writeBitmap(key, bytes);       <span class="comment">// 快取層</span>
+        }
+        <span class="keyword">return</span> bitmapValue;
+    }
+}
+</pre>
+
+            <p>
+                Service 的角色在此更為明顯——它是「協調者」，安排 MongoDB 和 Redis 的操作順序。如果未來要加入「發送通知」，只需再定義一個 Port，注入即可，現有程式碼不受影響。
+            </p>
+
+            <div class="highlight-box info">
+                <h4>💡 多 Port 的優勢</h4>
+                <ul>
+                    <li>每個 Port 可以獨立測試（Mock 一個，真的跑另一個）</li>
+                    <li>新增基礎設施只需：定義 Port → 實作 Repo → 注入 Service</li>
+                    <li>不同 Port 可以用不同技術（Mongo + Redis + HTTP + MQ...）</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Chapter 12 -->
+        <section class="chapter" id="ch12">
+            <div class="chapter-number">Chapter 12</div>
+            <h2>命名慣例與檔案放置</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>層次</th>
+                        <th>命名模式</th>
+                        <th>範例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Controller</td>
+                        <td><code>{UseCase}Controller</code></td>
+                        <td>CreateCouponController, IssueCouponController</td>
+                    </tr>
+                    <tr>
+                        <td>Request DTO</td>
+                        <td><code>{UseCase}Request</code></td>
+                        <td>IssueCouponRequest</td>
+                    </tr>
+                    <tr>
+                        <td>Response DTO</td>
+                        <td><code>{UseCase}Response</code></td>
+                        <td>IssueCouponResponse</td>
+                    </tr>
+                    <tr>
+                        <td>Service</td>
+                        <td><code>{UseCase}Service</code></td>
+                        <td>IssueCouponService, UseCouponService</td>
+                    </tr>
+                    <tr>
+                        <td>Port</td>
+                        <td><code>{UseCase}{Tech?}</code> (Interface)</td>
+                        <td>UseCoupon, IssueCouponRedis, IssueCouponMongo</td>
+                    </tr>
+                    <tr>
+                        <td>DTO</td>
+                        <td><code>{ConceptName}</code></td>
+                        <td>UserId, CouponId</td>
+                    </tr>
+                    <tr>
+                        <td>Entity</td>
+                        <td><code>{BusinessConcept}</code></td>
+                        <td>Coupon, CouponM</td>
+                    </tr>
+                    <tr>
+                        <td>Repository</td>
+                        <td><code>{UseCase}{Tech?}Repo</code></td>
+                        <td>CreateCouponRepo, IssueCouponRedisRepo</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box info">
+                <h4>📐 放置規則</h4>
+                <ul>
+                    <li><strong>Port Interface</strong> 永遠放在 <code>application/port/</code> — 因為它屬於「應用層的需求宣告」</li>
+                    <li><strong>Web DTO</strong> 永遠放在 <code>web/port/</code> — 明確屬於表現層</li>
+                    <li><strong>Application DTO</strong> 放在 <code>application/dto/</code> — 層間通訊用</li>
+                    <li><strong>Domain 物件</strong> 放在 <code>domain/</code> — 乾淨、無依賴</li>
+                    <li><strong>所有實作</strong> 放在 <code>repository/</code> — 不管是 DB、Cache 還是外部 API</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Chapter 13 -->
+        <section class="chapter" id="ch13">
+            <div class="chapter-number">Chapter 13</div>
+            <h2>禁忌與反模式</h2>
+
+            <div class="highlight-box warning">
+                <h4>🚫 絕對不要做的事</h4>
+                <ul>
+                    <li><strong>Controller 直接呼叫 Repository</strong> — 繞過 Application 層意味著業務邏輯散落各處</li>
+                    <li><strong>Service 直接 new Repository</strong> — 失去依賴反轉的好處，無法替換、無法測試</li>
+                    <li><strong>Domain 物件 import Spring 類別</strong> — Domain 一旦依賴框架，就不再「純粹」</li>
+                    <li><strong>Repository 做業務判斷</strong> — 「如果餘額不足就不扣款」這種邏輯屬於 Domain 或 Service</li>
+                    <li><strong>把 Request DTO 傳進 Service</strong> — 這讓 Application 層被 Web 層汙染</li>
+                    <li><strong>一個 Controller 做十件事</strong> — 違反 SRP，應該拆成多個 Controller</li>
+                </ul>
+            </div>
+
+            <p>
+                每條禁忌的背後都是同一個理由：<strong>維持層間邊界的清晰</strong>。一旦邊界被突破，技術債務就會像破窗一樣蔓延——「反正那邊已經亂了，這裡也亂一下吧」。
+            </p>
+        </section>
+
+        <!-- Chapter 14 -->
+        <section class="chapter" id="ch14">
+            <div class="chapter-number">Chapter 14</div>
+            <h2>與經典架構的對照</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>經典架構</th>
+                        <th>提出者</th>
+                        <th>本架構的對應</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Hexagonal Architecture</strong><br>(Ports & Adapters)</td>
+                        <td>Alistair Cockburn, 2005</td>
+                        <td><code>application/port/</code> = Port<br><code>repository/</code> = Adapter<br>完全對應</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Clean Architecture</strong></td>
+                        <td>Robert C. Martin, 2012</td>
+                        <td>依賴方向由外向內<br>Domain 不依賴任何層<br>Dependency Rule 完全遵守</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Domain-Driven Design</strong></td>
+                        <td>Eric Evans, 2003</td>
+                        <td><code>domain/</code> 中的 Entity 封裝業務行為<br>Application Service 協調而非執行邏輯</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Onion Architecture</strong></td>
+                        <td>Jeffrey Palermo, 2008</td>
+                        <td>同心圓結構：Domain 在核心<br>Infrastructure 在最外層</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <blockquote>
+                本架構可以描述為：<strong>以 Clean Architecture 的分層規則為骨架，以 Hexagonal Architecture 的 Port/Adapter 為肌肉，以 DDD 的 Entity 建模為靈魂</strong>的實用主義架構。
+                <cite>— 設計總結</cite>
+            </blockquote>
+
+            <p>
+                它不追求學術上的完美對齊，而是取各家之長，落地為一套在 Spring Boot 生態中<strong>容易理解、容易遵循、容易傳承</strong>的實作模式。每個加入團隊的新人，只要看目錄結構就能知道程式碼該放哪裡——這就是好架構的最高標準。
+            </p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Clean Port-Adapter Layered Architecture — Design Guide</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            Inspired by Robert C. Martin, Alistair Cockburn, Eric Evans, and Jeffrey Palermo
+        </p>
+    </footer>
+
+</body>
+</html>
