@@ -268,6 +268,38 @@
         .ring-mid > .ring-label { top: 8px; left: 50%; transform: translateX(-50%); color: var(--purple); }
         .ring-core > .ring-label { color: var(--green); font-size: 0.65rem; text-align: center; line-height: 1.4; }
 
+        /* Concentric circle direction label */
+        .concentric-direction {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            margin-top: 0.75rem;
+            font-size: 0.78rem;
+            color: var(--gray-500);
+        }
+        .concentric-direction .dir-label {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .concentric-direction .dir-label.high {
+            background: var(--green-light);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+        .concentric-direction .dir-label.low {
+            background: var(--amber-light);
+            color: var(--amber);
+            border: 1px solid var(--amber);
+        }
+        .concentric-direction .dir-arrow {
+            padding: 0 0.5rem;
+            color: var(--gray-400);
+            font-size: 1rem;
+        }
+
         /* Dependency arrow diagram */
         .dep-flow {
             display: flex;
@@ -467,6 +499,277 @@
             color: var(--amber);
         }
 
+        /* Wrong vs Right code comparison */
+        .code-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        @media (max-width: 768px) {
+            .code-compare { grid-template-columns: 1fr; }
+        }
+        .code-compare-block { }
+        .code-compare-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px 6px 0 0;
+            margin-bottom: 0;
+        }
+        .code-compare-label.wrong {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 2px solid #dc2626;
+            border-bottom: none;
+        }
+        .code-compare-label.right {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 2px solid #16a34a;
+            border-bottom: none;
+        }
+        .code-compare-block pre {
+            margin: 0;
+            border-radius: 0 0 6px 6px;
+        }
+        .code-compare-block.wrong pre {
+            border: 2px solid #dc2626;
+            border-top: none;
+        }
+        .code-compare-block.right pre {
+            border: 2px solid #16a34a;
+            border-top: none;
+        }
+
+        /* Decision table */
+        .decision-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+        }
+        .decision-table th {
+            background: var(--gray-100);
+            padding: 0.6rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border);
+        }
+        .decision-table td {
+            padding: 0.55rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .decision-table tr:last-child td { border-bottom: none; }
+        .decision-table .badge {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .badge-domain   { background: var(--green-light);   color: var(--green);   border: 1px solid var(--green); }
+        .badge-repo     { background: var(--amber-light);   color: var(--amber);   border: 1px solid var(--amber); }
+        .badge-app      { background: var(--purple-light);  color: var(--purple);  border: 1px solid var(--purple); }
+        .badge-web      { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+
+        /* Q&A block */
+        .qa-block {
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+            padding: 0.8rem 1.2rem;
+            background: var(--gray-100);
+            border-radius: 0 8px 8px 0;
+        }
+        .qa-block .qa-q {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.4rem;
+        }
+        .qa-block .qa-a {
+            font-size: 0.92rem;
+            color: var(--gray-700, #374151);
+            margin: 0;
+        }
+
+        /* Evolution steps */
+        .evolution-step {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            align-items: flex-start;
+        }
+        .evolution-badge {
+            flex-shrink: 0;
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-top: 0.15rem;
+        }
+        .evolution-badge.stage-1 { background: var(--gray-300); color: var(--gray-700); }
+        .evolution-badge.stage-2 { background: var(--amber-light); color: var(--amber); border: 2px solid var(--amber); }
+        .evolution-badge.stage-3 { background: var(--green-light); color: var(--green); border: 2px solid var(--green); }
+        .evolution-content { flex: 1; }
+        .evolution-content h4 { margin-bottom: 0.3rem; font-size: 1rem; }
+        .evolution-arrow {
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 1.4rem;
+            margin: 0.25rem 0;
+            padding-left: 1.1rem;
+        }
+
+        /* Simple layer stack diagram */
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 1.2rem auto;
+            max-width: 380px;
+        }
+        .layer-block {
+            padding: 0.65rem 1.2rem;
+            text-align: center;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border: 2px solid;
+        }
+        .layer-block:first-child { border-radius: 8px 8px 0 0; }
+        .layer-block:last-child  { border-radius: 0 0 8px 8px; }
+        .layer-block.web-block    { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+        .layer-block.app-block    { background: var(--purple-light);  border-color: var(--purple);  color: var(--purple); }
+        .layer-block.domain-block { background: var(--green-light);   border-color: var(--green);   color: var(--green); }
+        .layer-block.repo-block   { background: var(--amber-light);   border-color: var(--amber);   color: var(--amber); }
+        .layer-block.merged-block { background: #fce7f3; border-color: var(--rose); color: var(--rose); }
+        .layer-stack-arrow {
+            text-align: center;
+            color: var(--gray-400);
+            font-size: 1.1rem;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Analogy card */
+        .analogy-card {
+            background: #fffbeb;
+            border: 2px solid var(--amber);
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.2rem 0;
+        }
+        .analogy-card .analogy-title {
+            font-weight: 700;
+            color: var(--amber);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* State flow table */
+        .state-flow {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            font-size: 0.88rem;
+        }
+        .state-flow th {
+            background: var(--dark);
+            color: white;
+            padding: 0.55rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        .state-flow td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        .state-flow tr:last-child td { border-bottom: none; }
+        .state-flow .step-num {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.78rem;
+        }
+        .state-flow .actor-app    { color: var(--purple);  font-weight: 600; }
+        .state-flow .actor-domain { color: var(--green);   font-weight: 600; }
+        .state-flow .actor-repo   { color: var(--amber);   font-weight: 600; }
+        .state-flow .obj-state {
+            display: inline-block;
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: var(--gray-100);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.1rem 0.5rem;
+        }
+        .state-flow .obj-changed {
+            background: var(--green-light);
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        /* Domain object "ball" flow diagram */
+        .data-flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .dfd-layer {
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-width: 120px;
+        }
+        .dfd-app    { background: var(--purple-light); border: 2px solid var(--purple); color: var(--purple); }
+        .dfd-domain { background: var(--green-light);  border: 2px solid var(--green);  color: var(--green);  }
+        .dfd-repo   { background: var(--amber-light);  border: 2px solid var(--amber);  color: var(--amber);  }
+        .dfd-arrow  { font-size: 1.4rem; color: var(--gray-400); padding: 0 0.6rem; white-space: nowrap; }
+        .dfd-label  { font-size: 0.68rem; font-weight: 400; margin-top: 0.2rem; color: var(--gray-500); }
+
+        /* Life analogy table */
+        .life-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin: 1.2rem 0;
+        }
+        .life-table th {
+            background: var(--gray-100);
+            padding: 0.5rem 0.9rem;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            font-weight: 700;
+        }
+        .life-table td {
+            padding: 0.55rem 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .life-table tr:last-child td { border-bottom: none; }
+        .life-table .emoji { font-size: 1.1rem; }
+
         /* Footer */
         .footer {
             margin-top: 4rem;
@@ -503,12 +806,15 @@
         <h2>目 錄</h2>
         <ol>
             <li><a href="#ch1">設計哲學 — 為什麼需要分層？</a></li>
+            <li><a href="#ch-evolution">給小白：從你熟悉的 MVC 出發</a></li>
+            <li><a href="#ch-domain-flow">給小白（進階）：Domain 是什麼在流動？</a></li>
             <li><a href="#ch2">核心原則</a></li>
             <li><a href="#ch3">四層架構總覽</a></li>
             <li><a href="#ch4">Web Layer（表現層）</a></li>
             <li><a href="#ch5">Application Layer（應用層）</a></li>
             <li><a href="#ch6">Domain Layer（領域層）</a></li>
             <li><a href="#ch7">Repository Layer（基礎設施層）</a></li>
+            <li><a href="#ch-boundary">邊界判斷 — 這段程式碼屬於哪一層？</a></li>
             <li><a href="#ch8">Port & Adapter 機制詳解</a></li>
             <li><a href="#ch9">完整請求生命週期</a></li>
             <li><a href="#ch10">實作範例 — Use Coupon</a></li>
@@ -556,6 +862,568 @@
             </div>
         </section>
 
+        <!-- Chapter: Evolution (for beginners) -->
+        <section class="chapter" id="ch-evolution">
+            <div class="chapter-number">給小白</div>
+            <h2>從你熟悉的 MVC 出發 — 一步一步演化到四層架構</h2>
+
+            <p>
+                如果你第一次接觸 RESTful API，你學的大概是這樣的三層結構：
+                <strong>Controller 接請求 → Service 處理邏輯 → Repository 存資料庫</strong>。
+                這沒有錯，這是一個好的起點。但這份文件要介紹的架構多了一個 <strong>Domain Layer</strong>，
+                而且 Repository 的依賴方向也「反過來了」。
+            </p>
+            <p>
+                這章專門解釋：為什麼要這樣演化？每一步改變是為了解決什麼問題？
+            </p>
+
+            <h3>第一階段：你一開始學的樣子</h3>
+
+            <div style="display:flex; gap:2rem; flex-wrap:wrap; align-items:flex-start; margin:1rem 0;">
+                <div style="flex:1; min-width:200px;">
+                    <div class="layer-stack">
+                        <div class="layer-block web-block">Controller（接 HTTP）</div>
+                        <div class="layer-stack-arrow">↓ 呼叫</div>
+                        <div class="layer-block merged-block">Service（流程 + 業務規則都在這）</div>
+                        <div class="layer-stack-arrow">↓ 呼叫</div>
+                        <div class="layer-block repo-block">Repository（存資料庫）</div>
+                    </div>
+                </div>
+                <div style="flex:2; min-width:240px;">
+<pre>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">UseCouponService</span> {
+    <span class="keyword">public void</span> use(String couponId, String userId) {
+        <span class="comment">// 1. 去資料庫拿資料</span>
+        <span class="type">Coupon</span> c = repo.findById(couponId);
+
+        <span class="comment">// 2. 業務判斷 (寫在 Service 裡)</span>
+        <span class="keyword">if</span> (c.isUsed())
+            <span class="keyword">throw new</span> RuntimeException(<span class="string">"已使用"</span>);
+
+        <span class="comment">// 3. 改狀態 (也寫在 Service 裡)</span>
+        c.setUsed(<span class="keyword">true</span>);
+        c.setUsedBy(userId);
+
+        <span class="comment">// 4. 存回資料庫</span>
+        repo.save(c);
+    }
+}
+</pre>
+                </div>
+            </div>
+
+            <p>專案很小的時候，這樣寫完全沒問題。但請想像以下情境：</p>
+            <ul style="margin: 0.5rem 0 1rem 1.5rem;">
+                <li>老闆說：「同一張券，同一個人不能領兩次，而且過期的也不能用。」</li>
+                <li>你把這些 if 全寫進 Service，Service 越來越長。</li>
+                <li>下個月有另一個功能也需要「驗證優惠券狀態」，你就又在別的 Service 重寫一次一樣的 if。</li>
+                <li>產品規則改了，你要找遍所有 Service 去更新那些 if。</li>
+            </ul>
+
+            <div class="highlight-box warning">
+                <h4>🚨 Service 膨脹的症狀</h4>
+                <ul>
+                    <li>一個 Service 超過 100 行，而且全是 <code>if / else</code></li>
+                    <li>兩個不同的 Service 有幾乎一樣的業務判斷程式碼（複製貼上）</li>
+                    <li>要測試「優惠券不能重複使用」，卻必須 Mock 資料庫才能跑測試</li>
+                </ul>
+            </div>
+
+            <h3>第二階段：把「業務規則」從 Service 裡拉出來 → Domain 層誕生</h3>
+
+            <p>
+                關鍵洞察：<strong>Service 是「流程協調者」，不是「規則守護者」</strong>。
+            </p>
+
+            <div class="analogy-card">
+                <div class="analogy-title">🏗️ 現實比喻：工地包工頭 vs 法規手冊</div>
+                <p>
+                    想像蓋房子。<br>
+                    <strong>Service = 工地包工頭</strong>：他負責安排「先打地基、再立牆、再蓋屋頂」的流程。<br>
+                    <strong>Domain = 建築法規手冊</strong>：「牆壁厚度不能低於 15cm」、「逃生出口不能被遮擋」。<br><br>
+                    包工頭不需要把法規背在腦子裡——他說「按法規蓋」，法規手冊自己判斷對不對。
+                    同理，Service 說 <code>coupon.use(userId)</code>，Coupon 物件自己判斷能不能用。
+                </p>
+            </div>
+
+            <div style="display:flex; gap:2rem; flex-wrap:wrap; align-items:flex-start; margin:1rem 0;">
+                <div style="flex:1; min-width:200px;">
+                    <div class="layer-stack">
+                        <div class="layer-block web-block">Controller</div>
+                        <div class="layer-stack-arrow">↓</div>
+                        <div class="layer-block app-block">Service（只管流程）</div>
+                        <div class="layer-stack-arrow">↓ &nbsp;&nbsp;↓</div>
+                        <div class="layer-block domain-block">Domain（業務規則住這）</div>
+                        <div class="layer-stack-arrow">↓</div>
+                        <div class="layer-block repo-block">Repository</div>
+                    </div>
+                </div>
+                <div style="flex:2; min-width:240px;">
+<pre>
+<span class="comment">// Domain 物件：業務規則的家</span>
+<span class="keyword">public class</span> <span class="type">Coupon</span> {
+    <span class="keyword">private boolean</span> used;
+    <span class="keyword">private</span> String ownerId;
+
+    <span class="keyword">public void</span> use(String userId) {
+        <span class="comment">// 業務規則 IN 這裡，不在 Service</span>
+        <span class="keyword">if</span> (<span class="keyword">this</span>.used)
+            <span class="keyword">throw new</span> <span class="type">CouponAlreadyUsedException</span>();
+        <span class="keyword">if</span> (!<span class="keyword">this</span>.ownerId.equals(userId))
+            <span class="keyword">throw new</span> <span class="type">NotOwnerException</span>();
+        <span class="keyword">this</span>.used = <span class="keyword">true</span>;
+        <span class="keyword">this</span>.usedBy = userId;
+    }
+}
+
+<span class="comment">// Service：只管流程，不管規則細節</span>
+<span class="keyword">public class</span> <span class="type">UseCouponService</span> {
+    <span class="keyword">public void</span> use(<span class="type">UserId</span> uid, <span class="type">CouponId</span> cid) {
+        <span class="type">Coupon</span> c = repo.find(cid);  <span class="comment">// 拿</span>
+        c.use(uid.getId());         <span class="comment">// 規則判斷交給 Domain</span>
+        repo.save(c);               <span class="comment">// 存</span>
+    }
+}
+</pre>
+                </div>
+            </div>
+
+            <p>
+                現在，「優惠券不能重複使用」這個規則<strong>只存在一個地方</strong>：<code>Coupon.use()</code>。
+                不管哪個 Service 要用優惠券，都呼叫這個方法，規則自然被執行。
+                要測試這個規則，只需要 <code>new Coupon()</code>，完全不需要資料庫。
+            </p>
+
+            <h3>第三階段：Repository 的「反向依賴」到底在反什麼？</h3>
+
+            <p>
+                這是最讓小白困惑的部分。讓我們先看「普通寫法」出了什麼問題：
+            </p>
+
+<pre>
+<span class="comment">// ❌ 普通寫法：Service 直接 new 出 Repository</span>
+<span class="keyword">public class</span> <span class="type">UseCouponService</span> {
+    <span class="keyword">private</span> <span class="type">UseCouponMongoRepo</span> repo = <span class="keyword">new</span> <span class="type">UseCouponMongoRepo</span>();
+    <span class="comment">//                         ↑ Service 直接綁死在 MongoDB 的實作上</span>
+}
+</pre>
+
+            <p>
+                這樣的問題是：<strong>Service 跟 MongoDB 綁死了</strong>。如果你要：
+            </p>
+            <ul style="margin: 0.5rem 0 1rem 1.5rem;">
+                <li>換成 PostgreSQL → Service 要改</li>
+                <li>寫單元測試用假資料 → Service 要改</li>
+                <li>加 Redis 快取 → Service 要改</li>
+            </ul>
+
+            <div class="analogy-card">
+                <div class="analogy-title">📋 現實比喻：甲方的需求說明書</div>
+                <p>
+                    <strong>普通做法（沒有反向依賴）</strong>：你是業主（Service），你直接打電話給「王師傅（MongoRepo）」，
+                    你的工作完全依賴王師傅的行程和作法。王師傅退休了，你一切都要重來。<br><br>
+                    <strong>有反向依賴的做法</strong>：你是業主（Application），你先寫一份「需求說明書（Port Interface）」：
+                    「我需要一個能找優惠券、能儲存優惠券的服務。」然後<strong>貼公告</strong>，讓任何符合這份需求的承包商來競標。
+                    王師傅（MongoRepo）、李師傅（MySQLRepo）都可以來，都要<em>照你的需求說明書</em>來做。<br><br>
+                    「反向」的是：以前是師傅決定提供什麼、你去配合；現在是<strong>你決定你要什麼、師傅來配合你</strong>。
+                </p>
+            </div>
+
+<pre>
+<span class="comment">// ✅ 反向依賴寫法</span>
+
+<span class="comment">// Step 1：Application 層定義「需求說明書」（Port Interface）</span>
+<span class="keyword">public interface</span> <span class="interface">UseCoupon</span> {          <span class="comment">// ← 這份合約寫在 Application 層</span>
+    <span class="type">Coupon</span> find(<span class="type">CouponId</span> id);
+    <span class="keyword">void</span> save(<span class="type">Coupon</span> c);
+}
+
+<span class="comment">// Step 2：Service 只依賴「需求說明書」，不認識任何具體 Repo</span>
+<span class="keyword">public class</span> <span class="type">UseCouponService</span> {
+    <span class="keyword">private final</span> <span class="interface">UseCoupon</span> repo;  <span class="comment">// ← 只知道介面，不知道背後是 Mongo 還是 MySQL</span>
+}
+
+<span class="comment">// Step 3：Repository 層「按照需求說明書」實作</span>
+<span class="keyword">public class</span> <span class="type">UseCouponMongoRepo</span> <span class="keyword">implements</span> <span class="interface">UseCoupon</span> {  <span class="comment">// ← Repo 配合 Application 的合約</span>
+    <span class="keyword">public</span> <span class="type">Coupon</span> find(<span class="type">CouponId</span> id) { <span class="comment">/* MongoDB 查詢 */</span> }
+    <span class="keyword">public void</span> save(<span class="type">Coupon</span> c)       { <span class="comment">/* MongoDB 寫入 */</span> }
+}
+</pre>
+
+            <div class="highlight-box info">
+                <h4>💡 「反向」是指：誰定義介面的歸屬權反了</h4>
+                <ul>
+                    <li><strong>沒反向前</strong>：Repository 寫好自己的 class，Service 去用它 → 「Service 依賴 Repository」</li>
+                    <li><strong>反向後</strong>：Application 寫好 Interface，Repository 去實作它 → 「Repository 依賴 Application 的合約」</li>
+                    <li>依賴箭頭從「Service → MongoRepo」變成「MongoRepo → (Interface in Application)」</li>
+                    <li>Repository 的程式碼裡有 <code>implements UseCoupon</code>，所以是 <strong>Repository 依賴 Application 層的介面</strong>，不是反過來</li>
+                </ul>
+            </div>
+
+            <h3>三個階段的完整對比</h3>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>問題</th>
+                        <th>階段一（純 MVC）</th>
+                        <th>階段二（加 Domain）</th>
+                        <th>階段三（加 Port/DIP）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>業務規則放哪？</td>
+                        <td>Service 裡的 if/else</td>
+                        <td>Domain 物件的方法</td>
+                        <td>Domain 物件的方法 ✅</td>
+                    </tr>
+                    <tr>
+                        <td>換資料庫要改哪？</td>
+                        <td>Service（因為直接 new Repo）</td>
+                        <td>Service（仍然直接 new Repo）</td>
+                        <td>只改 Repository 實作 ✅</td>
+                    </tr>
+                    <tr>
+                        <td>測試業務規則需要 DB？</td>
+                        <td>需要（規則在 Service 裡）</td>
+                        <td>不需要（規則在 Domain 裡）✅</td>
+                        <td>不需要 ✅</td>
+                    </tr>
+                    <tr>
+                        <td>測試 Service 需要 DB？</td>
+                        <td>需要（直接 new MongoRepo）</td>
+                        <td>需要（直接 new MongoRepo）</td>
+                        <td>不需要（注入 Mock）✅</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box success">
+                <h4>✅ 現在你可以帶著這個理解往下讀</h4>
+                <ul>
+                    <li><strong>Domain</strong> = 業務規則的家，不依賴任何外部技術</li>
+                    <li><strong>Application (Service)</strong> = 流程指揮官：「先拿、讓 Domain 判斷、再存」</li>
+                    <li><strong>Port (Interface)</strong> = Application 層貼出的「需求說明書」</li>
+                    <li><strong>Repository</strong> = 按需求說明書實作的承包商，只管存取技術細節</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Chapter: Domain Flow -->
+        <section class="chapter" id="ch-domain-flow">
+            <div class="chapter-number">給小白（進階）</div>
+            <h2>Domain 是什麼在流動？ — 資料、狀態、與規則</h2>
+
+            <p>
+                上一章解釋了 Domain 的存在意義。但很多人看完還是會卡住：
+                「流程寫在 Application，資料庫寫在 Repository，那 Domain 到底在哪裡活動？
+                它到底是個什麼？」
+            </p>
+            <p>
+                這章用一個生活比喻，再加一個完整的「領券」範例，讓你徹底搞清楚
+                Domain 物件在系統裡<strong>怎麼流動、狀態怎麼變、規則怎麼帶著走</strong>。
+            </p>
+
+            <h3>生活比喻：外送平台點餐</h3>
+
+            <div class="analogy-card">
+                <div class="analogy-title">🛵 用外送訂單來理解三層分工</div>
+                <p>你用 App 點了一份牛肉麵。這個過程有三個角色：</p>
+                <ul style="margin: 0.6rem 0 0.6rem 1.2rem;">
+                    <li><strong>平台客服（Application Layer）</strong>：接受你的點餐、安排送餐、確認送達、處理退款——她負責跑整個流程的 SOP。</li>
+                    <li><strong>訂單本身（Domain Object）</strong>：從你點單的那一刻起，訂單就存在了。它帶著你的資料、帶著金額、帶著「未送達→送達→已評價」的狀態。它也帶著規則：「已評價的訂單不能再評價」、「已取消的訂單不能送餐」。</li>
+                    <li><strong>訂單資料庫（Repository）</strong>：只負責把訂單存進去、取出來。它不管你的訂單能不能取消，那不是它的事。</li>
+                </ul>
+                <p style="margin:0.5rem 0 0;">
+                    注意：<strong>訂單（Domain 物件）在客服（Application）和資料庫（Repository）之間流動。</strong>
+                    客服呼叫資料庫取出訂單，操作訂單的狀態，再請資料庫存回去。訂單本身帶著規則，不管在哪裡被操作，規則都跟著。
+                </p>
+            </div>
+
+            <div class="data-flow-diagram">
+                <div class="dfd-layer dfd-app">Application<br><div class="dfd-label">跑流程 SOP</div></div>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <div class="dfd-arrow" style="font-size:0.72rem; color:var(--green); font-weight:700; padding:0 0.4rem;">← Domain 物件來回傳遞 →</div>
+                    <div class="dfd-layer dfd-domain" style="margin: 0.4rem 0; width:160px;">Domain Object<br><div class="dfd-label">資料 ＋ 規則 ＋ 狀態</div></div>
+                    <div class="dfd-arrow" style="font-size:0.72rem; color:var(--amber); font-weight:700; padding:0 0.4rem;">↓ find() / save() ↓</div>
+                </div>
+                <div class="dfd-layer dfd-repo">Repository<br><div class="dfd-label">存取技術細節</div></div>
+            </div>
+
+            <h3>「你其實一直都在建立 Domain 物件」</h3>
+
+            <p>
+                當你第一次寫優惠券時，你可能這樣寫：
+            </p>
+
+<pre>
+<span class="comment">// 小白第一次寫法（你"已經"在描述 Domain，只是沒意識到）</span>
+<span class="type">Coupon</span> coupon = <span class="keyword">new</span> <span class="type">Coupon</span>();
+coupon.setCouponId(UUID.randomUUID().toString());
+coupon.setUserId(userId);
+coupon.setUsed(<span class="keyword">false</span>);
+coupon.setExpiredAt(LocalDate.now().plusDays(<span class="number">30</span>));
+
+<span class="comment">// 然後業務判斷寫在 Service 裡：</span>
+<span class="keyword">if</span> (coupon.isUsed()) <span class="keyword">throw new</span> RuntimeException(<span class="string">"已使用"</span>);
+coupon.setUsed(<span class="keyword">true</span>);
+coupon.setUsedBy(userId);
+</pre>
+
+            <p>
+                你<em>已經</em>在描述 Domain！你知道優惠券有 ID、有使用者、有狀態、有有效期——
+                這就是 Domain 物件的資料。
+                問題只有一個：你把<strong>規則（if 判斷）</strong>和<strong>狀態變更（set 操作）</strong>放在 Service，
+                而不是放進 Coupon 物件本身。
+            </p>
+            <p>
+                <strong>Domain layer 要做的事，只是把規則從 Service 移到物件裡：</strong>
+            </p>
+
+<pre>
+<span class="comment">// Domain 版：規則住進物件本身</span>
+<span class="keyword">public class</span> <span class="type">Coupon</span> {
+    <span class="keyword">private</span> String couponId;
+    <span class="keyword">private</span> String ownerId;
+    <span class="keyword">private boolean</span> used;
+    <span class="keyword">private</span> LocalDate expiredAt;
+
+    <span class="comment">// ① 建立券的工廠方法（帶著初始規則）</span>
+    <span class="keyword">public static</span> <span class="type">Coupon</span> issue(String ownerId) {
+        <span class="type">Coupon</span> c = <span class="keyword">new</span> <span class="type">Coupon</span>();
+        c.couponId  = UUID.randomUUID().toString();
+        c.ownerId   = ownerId;
+        c.used      = <span class="keyword">false</span>;
+        c.expiredAt = LocalDate.now().plusDays(<span class="number">30</span>);
+        <span class="keyword">return</span> c;
+    }
+
+    <span class="comment">// ② 使用券的業務行為（帶著使用規則）</span>
+    <span class="keyword">public void</span> use(String userId) {
+        <span class="keyword">if</span> (<span class="keyword">this</span>.used)
+            <span class="keyword">throw new</span> <span class="type">CouponAlreadyUsedException</span>();
+        <span class="keyword">if</span> (LocalDate.now().isAfter(<span class="keyword">this</span>.expiredAt))
+            <span class="keyword">throw new</span> <span class="type">CouponExpiredException</span>();
+        <span class="keyword">if</span> (!<span class="keyword">this</span>.ownerId.equals(userId))
+            <span class="keyword">throw new</span> <span class="type">NotOwnerException</span>();
+        <span class="keyword">this</span>.used   = <span class="keyword">true</span>;
+        <span class="keyword">this</span>.usedBy = userId;
+    }
+}
+<span class="comment">// Coupon 就像演唱會票根：票根本身就印著「限本人使用、一次性入場」的規則。
+// 不管交給哪個驗票員（Service），規則都在票上，不會搞丟。</span>
+</pre>
+
+            <h3>完整「領券」流程 — Domain 物件的狀態旅程</h3>
+
+            <p>
+                現在來看一個完整的「領券（Issue Coupon）」流程，
+                追蹤 Domain 物件是如何在 Application 和 Repository 之間流動，以及狀態怎麼一步步改變：
+            </p>
+
+            <table class="state-flow">
+                <thead>
+                    <tr>
+                        <th style="width:2.5rem;">步</th>
+                        <th style="width:7rem;">誰在動作</th>
+                        <th>做了什麼</th>
+                        <th>Domain 物件的狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="step-num">1</span></td>
+                        <td><span class="actor-app">Application</span></td>
+                        <td>呼叫 <code>repo.findUser(userId)</code></td>
+                        <td><span class="obj-state">User{ id, issuedCount: 2 }</span><br><small>從 DB 取出 User 物件</small></td>
+                    </tr>
+                    <tr>
+                        <td><span class="step-num">2</span></td>
+                        <td><span class="actor-domain">Domain</span></td>
+                        <td>呼叫 <code>user.canIssueCoupon()</code></td>
+                        <td><span class="obj-state">User</span> 自己判斷：每人上限 3 張，目前 2 張 → <strong>OK</strong><br><small>業務規則在 User 物件裡，不在 Service 裡</small></td>
+                    </tr>
+                    <tr>
+                        <td><span class="step-num">3</span></td>
+                        <td><span class="actor-domain">Domain</span></td>
+                        <td>呼叫 <code>Coupon.issue(userId)</code></td>
+                        <td><span class="obj-state obj-changed">Coupon{ id: 新ID, used: false, expiredAt: +30天 }</span><br><small>Domain 物件誕生，帶著初始狀態</small></td>
+                    </tr>
+                    <tr>
+                        <td><span class="step-num">4</span></td>
+                        <td><span class="actor-domain">Domain</span></td>
+                        <td>呼叫 <code>user.recordIssuance()</code></td>
+                        <td><span class="obj-state obj-changed">User{ id, issuedCount: 3 }</span><br><small>User 物件的計數器 +1（Domain 狀態更新）</small></td>
+                    </tr>
+                    <tr>
+                        <td><span class="step-num">5</span></td>
+                        <td><span class="actor-app">Application</span></td>
+                        <td>呼叫 <code>repo.save(coupon)</code></td>
+                        <td>Coupon 物件交給 Repository，Repository 把它轉換成 DB 格式存入<br><small>Repository 只管「怎麼存」，不管「能不能存」</small></td>
+                    </tr>
+                    <tr>
+                        <td><span class="step-num">6</span></td>
+                        <td><span class="actor-app">Application</span></td>
+                        <td>呼叫 <code>repo.saveUser(user)</code></td>
+                        <td>更新後的 User 物件也存回 DB<br><small>流程結束，所有狀態持久化</small></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>整個流程的程式碼就是這樣：</p>
+
+<pre>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">IssueCouponService</span> {
+
+    <span class="keyword">public void</span> issue(<span class="type">UserId</span> userId) {
+        <span class="comment">// 1. Repo 把 User 從 DB 取出 → 交給 Application</span>
+        <span class="type">User</span> user = userRepo.find(userId);
+
+        <span class="comment">// 2. Application 把 User 交給 Domain 判斷</span>
+        user.canIssueCoupon();      <span class="comment">// User 自己知道規則，不行就拋例外</span>
+
+        <span class="comment">// 3. Domain 建立新的 Coupon 物件（帶著初始狀態）</span>
+        <span class="type">Coupon</span> coupon = <span class="type">Coupon</span>.issue(userId.getId());
+
+        <span class="comment">// 4. Domain 更新 User 狀態</span>
+        user.recordIssuance();
+
+        <span class="comment">// 5 & 6. Application 把 Domain 物件交給 Repo 存回 DB</span>
+        couponRepo.save(coupon);
+        userRepo.save(user);
+    }
+}
+<span class="comment">
+// Service 做的事只有：拿 → 交給 Domain 操作 → 存
+// 所有業務判斷和狀態變更，都在 Domain 物件的方法裡完成
+// Service 自己沒有一個 if/else</span>
+</pre>
+
+            <h3>生活中早就存在的「Domain 物件」</h3>
+
+            <p>
+                Domain layer 之所以感覺「多出來」又「難理解」，
+                是因為把規則放進物件本身這件事<em>在現實世界中其實天然存在</em>，
+                只是我們寫程式時沒有把這個直覺帶進來。
+            </p>
+
+            <table class="life-table">
+                <thead>
+                    <tr>
+                        <th>生活中的 Domain 物件</th>
+                        <th>物件自帶的規則（Domain Rules）</th>
+                        <th>誰只管「存取」（Repository 概念）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="emoji">🎫</span> <strong>演唱會票根</strong></td>
+                        <td>「每張票限入場一次」<br>「入場後不退票」<br>「持票者本人才能入場」</td>
+                        <td>票務系統資料庫（存票、查票）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="emoji">🏦</span> <strong>銀行帳戶</strong></td>
+                        <td>「餘額不能為負」<br>「每日轉帳上限 100 萬」<br>「凍結帳戶不能轉出」</td>
+                        <td>銀行核心系統（存餘額、查紀錄）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="emoji">🅿️</span> <strong>停車場票根</strong></td>
+                        <td>「入場時間印在票上決定計費」<br>「同一張票不能入場兩次」</td>
+                        <td>停車場管理系統（存入場紀錄）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="emoji">📚</span> <strong>圖書館借書證</strong></td>
+                        <td>「同本書同時只有一人可借」<br>「逾期未還要罰款」<br>「最多借 5 本」</td>
+                        <td>圖書館系統（存借還紀錄）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="emoji">🎟️</span> <strong>優惠券</strong></td>
+                        <td>「每人限領一次」<br>「使用後不可再用」<br>「有效期 30 天」</td>
+                        <td>優惠券資料庫（存券、查券）</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                在現實世界，這些規則<strong>印在物件上</strong>（票根背面的使用說明）
+                或<strong>寫在合約裡</strong>（帳戶開戶條款）。
+                規則跟著物件走，不管哪個「服務流程」（Application）在處理這個物件，規則都在。
+                這就是 Domain layer 要模擬的現實。
+            </p>
+
+            <h3>為什麼「把規則放進物件」這麼反直覺？</h3>
+
+            <p>
+                因為你學程式是從「<em>一步一步執行的流程</em>」開始學的：
+                先做 A，再做 B，再做 C。這個思考模式很自然地會把判斷寫在流程裡，而不是物件裡。
+            </p>
+            <p>
+                但想想你說中文的方式：你會說「<strong>這張票已經用過了，不能再用</strong>」——
+                主詞是「票」，規則是票的屬性。你不會說「如果這張票的 used 欄位是 true，那就不能用」——
+                那是把規則從物件身上剝離出來，放到外面用 if 表達。
+            </p>
+
+            <div class="highlight-box info">
+                <h4>💡 把「說話方式」帶回程式</h4>
+                <ul>
+                    <li>中文說：「這張票<strong>已經用過了</strong>」→ 程式寫：<code>ticket.use()</code>（票自己知道能不能用）</li>
+                    <li>中文說：「帳戶<strong>餘額不足</strong>」→ 程式寫：<code>account.withdraw(amount)</code>（帳戶自己判斷能不能扣）</li>
+                    <li>中文說：「優惠券<strong>還在有效期</strong>」→ 程式寫：<code>coupon.isValid()</code>（券自己知道自己的狀態）</li>
+                </ul>
+                <p style="margin: 0.5rem 0 0;">
+                    當你的程式碼可以像說中文一樣理解，就代表 Domain 設計是正確的。
+                </p>
+            </div>
+
+            <h3>一眼看出邊界問題的快速方法</h3>
+
+            <table class="decision-table">
+                <thead>
+                    <tr>
+                        <th>你在哪裡看到這段程式</th>
+                        <th>邊界正確嗎？</th>
+                        <th>應該怎麼做</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Service.java</strong> 裡有 <code>coupon.isUsed()</code> 的 if 判斷</td>
+                        <td>❌ 邊界錯誤</td>
+                        <td>這個判斷移進 <code>Coupon.use()</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service.java</strong> 裡有 <code>coupon.setUsed(true)</code></td>
+                        <td>❌ 邊界錯誤</td>
+                        <td>狀態變更封進 <code>Coupon.use()</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repo.java</strong> 裡有 <code>if (alreadyIssued) throw</code></td>
+                        <td>❌ 邊界錯誤</td>
+                        <td>業務判斷移到 Domain 或 Application</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Domain Coupon.java</strong> 裡有 <code>mongoTemplate.find()</code></td>
+                        <td>❌ 邊界錯誤</td>
+                        <td>Domain 不能碰 DB，查詢移到 Repository</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service.java</strong> 裡只有：拿 → 呼叫 Domain 方法 → 存</td>
+                        <td>✅ 正確</td>
+                        <td>Service 是純流程協調，沒有業務 if</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Domain Coupon.java</strong> 裡沒有任何 import 外部框架</td>
+                        <td>✅ 正確</td>
+                        <td>Domain 是純 Java，不依賴任何技術</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
         <!-- Chapter 2 -->
         <section class="chapter" id="ch2">
             <div class="chapter-number">Chapter 2</div>
@@ -565,6 +1433,19 @@
             <p>
                 高層模組不應該依賴低層模組，兩者都應該依賴抽象。在本架構中，Application Layer 定義 Port（Interface），Repository Layer 實作它。Application 永遠只面對介面程式設計，從不直接 new 出一個 Repository。
             </p>
+            <div class="highlight-box info">
+                <h4>🎯 「高層」vs「低層」是什麼意思？</h4>
+                <p style="margin: 0.4rem 0 0.6rem;">
+                    「高/低」描述的是<strong>抽象程度</strong>，不是圖中的大小或位置。對應到後面的同心圓：
+                </p>
+                <ul>
+                    <li><strong>高層模組（內圈）</strong>：Domain、Application — 純業務邏輯，不在乎資料怎麼存、用哪個框架</li>
+                    <li><strong>低層模組（外圈）</strong>：Repository、Web — 技術實作細節，知道 MySQL / HTTP 的存在</li>
+                </ul>
+                <p style="margin: 0.6rem 0 0;">
+                    程式小白直覺上可能覺得「高 = 外圈（大）」，但在架構術語中恰恰相反：越抽象、越靠近業務核心，就叫「高層」。
+                </p>
+            </div>
 
             <h3>單一職責原則 (Single Responsibility Principle)</h3>
             <p>
@@ -611,6 +1492,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="concentric-direction">
+                    <span class="dir-label low">低層模組（外圈）技術細節</span>
+                    <span class="dir-arrow">←&nbsp;內&nbsp;→</span>
+                    <span class="dir-label high">高層模組（內圈）業務核心</span>
                 </div>
             </div>
 
@@ -855,6 +1741,222 @@
             <p>
                 Spring 的依賴注入會自動將這個 <code>@Repository</code> 類別注入到 Service 中宣告的 <code>UseCoupon</code> 介面欄位。Service 永遠不知道背後是 MongoDB 還是 MySQL——這就是依賴反轉的威力。
             </p>
+        </section>
+
+        <!-- Chapter: Boundary -->
+        <section class="chapter" id="ch-boundary">
+            <div class="chapter-number">邊界判斷</div>
+            <h2>這段程式碼屬於哪一層？</h2>
+
+            <blockquote>
+                「我知道每層叫什麼，但我還是不知道這行程式碼該寫在哪裡。」
+                <cite>— 每一位初學架構的工程師</cite>
+            </blockquote>
+
+            <p>
+                看完前幾章，你知道了 Domain、Application、Repository 的定義。但實際寫程式時，最常出現的問題是：
+                <strong>「這個 if 判斷應該寫在 Coupon.java 還是 UseCouponRepo.java？」</strong>
+                本章給你一個可以隨時拿出來用的判斷工具。
+            </p>
+
+            <h3>一句話判斷法</h3>
+
+            <div class="highlight-box info">
+                <h4>🔑 判斷問題：「把整個資料庫換掉，這行程式碼需要跟著改嗎？」</h4>
+                <ul>
+                    <li><strong>不需要改</strong>（跟資料庫無關）→ 業務邏輯 → 放 <strong>Domain</strong> 或 <strong>Application</strong></li>
+                    <li><strong>需要改</strong>（跟 SQL / MongoDB API / Redis API 有關）→ 技術細節 → 放 <strong>Repository</strong></li>
+                </ul>
+            </div>
+
+            <h3>什麼叫「業務判斷」？</h3>
+
+            <p>
+                想像你是這家電商公司的老闆，你對工程師說的規則，就是業務規則：
+            </p>
+
+            <table class="decision-table">
+                <thead>
+                    <tr>
+                        <th>老闆說的規則</th>
+                        <th>層次</th>
+                        <th>換資料庫會變嗎？</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>「一張優惠券只能被使用一次」</td>
+                        <td><span class="badge badge-domain">Domain</span></td>
+                        <td>❌ 不會，這是商業規則</td>
+                    </tr>
+                    <tr>
+                        <td>「過期的優惠券不能使用」</td>
+                        <td><span class="badge badge-domain">Domain</span></td>
+                        <td>❌ 不會，跟資料庫完全無關</td>
+                    </tr>
+                    <tr>
+                        <td>「只有持有人才能使用自己的券」</td>
+                        <td><span class="badge badge-domain">Domain</span></td>
+                        <td>❌ 不會，這是身份驗證邏輯</td>
+                    </tr>
+                    <tr>
+                        <td>「先查 Redis 快取，沒有再去 MySQL」</td>
+                        <td><span class="badge badge-repo">Repository</span></td>
+                        <td>✅ 會，完全是技術選型問題</td>
+                    </tr>
+                    <tr>
+                        <td>「用 couponId 當 key 查 MongoDB」</td>
+                        <td><span class="badge badge-repo">Repository</span></td>
+                        <td>✅ 會，MongoDB API 是技術細節</td>
+                    </tr>
+                    <tr>
+                        <td>「先查券、再核銷、再存回去」的步驟順序</td>
+                        <td><span class="badge badge-app">Application</span></td>
+                        <td>❌ 不會，但這是流程協調，不是核心規則</td>
+                    </tr>
+                    <tr>
+                        <td>「HTTP 請求的 couponId 欄位不能空白」</td>
+                        <td><span class="badge badge-web">Web</span></td>
+                        <td>❌ 不會，但這是輸入格式驗證，不是業務規則</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Repository 的「最底層」是什麼？</h3>
+
+            <p>
+                Repository 是整個系統的<strong>倉庫管理員</strong>。他只做兩件事：
+            </p>
+            <ul>
+                <li><strong>拿資料</strong>：去資料庫/外部服務把資料取出來，轉換成 Domain 物件交給你</li>
+                <li><strong>存資料</strong>：把 Domain 物件轉換成資料庫格式，寫進去</li>
+            </ul>
+            <p>
+                他<strong>不決定「能不能」做這件事</strong>。你叫他拿 coupon-001，他就去拿，拿不到才告訴你找不到。你叫他存，他就存。業務上「這張券可不可以被使用」不是他的問題——那是 Domain 的事。
+            </p>
+
+            <h3>錯誤 vs 正確：以「使用優惠券」為例</h3>
+
+            <p>下面展示同一個功能的兩種寫法——同樣能跑，但架構完全不同：</p>
+
+            <div class="code-compare">
+                <div class="code-compare-block wrong">
+                    <div class="code-compare-label wrong">❌ 錯誤：業務判斷混入 Repository</div>
+<pre>
+<span class="annotation">@Repository</span>
+<span class="keyword">public class</span> <span class="type">UseCouponRepo</span> {
+
+    <span class="keyword">public void</span> use(String couponId, String userId) {
+        <span class="type">Coupon</span> c = db.findById(couponId);
+
+        <span class="comment">// ❌ 業務判斷不該在這裡</span>
+        <span class="keyword">if</span> (c.isUsed())
+            <span class="keyword">throw new</span> <span class="type">AlreadyUsedException</span>();
+
+        <span class="comment">// ❌ 業務行為不該在這裡</span>
+        c.setUsed(<span class="keyword">true</span>);
+        c.setUsedBy(userId);
+
+        db.save(c); <span class="comment">// ✓ 只有這行是 Repo 的本分</span>
+    }
+}
+
+<span class="comment">// 問題：換資料庫時，業務規則被迫跟著動
+// 問題：Domain 物件 Coupon 變成只是資料容器
+// 問題：無法用純 JUnit 測試業務規則</span>
+</pre>
+                </div>
+                <div class="code-compare-block right">
+                    <div class="code-compare-label right">✅ 正確：每層各司其職</div>
+<pre>
+<span class="comment">// --- Domain 層：業務規則的家 ---</span>
+<span class="keyword">public class</span> <span class="type">Coupon</span> {
+    <span class="keyword">public void</span> use(String userId) {
+        <span class="comment">// ✅ 業務判斷在這裡</span>
+        <span class="keyword">if</span> (<span class="keyword">this</span>.used)
+            <span class="keyword">throw new</span> <span class="type">CouponAlreadyUsedException</span>();
+        <span class="keyword">if</span> (!<span class="keyword">this</span>.ownerId.equals(userId))
+            <span class="keyword">throw new</span> <span class="type">NotOwnerException</span>();
+        <span class="comment">// ✅ 業務行為在這裡</span>
+        <span class="keyword">this</span>.used = <span class="keyword">true</span>;
+        <span class="keyword">this</span>.usedBy = userId;
+    }
+}
+
+<span class="comment">// --- Repository 層：只管存取 ---</span>
+<span class="keyword">public class</span> <span class="type">UseCouponRepo</span> <span class="keyword">implements</span> <span class="interface">UseCoupon</span> {
+    <span class="keyword">public</span> <span class="type">Coupon</span> find(<span class="type">CouponId</span> id) {
+        <span class="keyword">return</span> db.findById(id.getId()); <span class="comment">// 只管拿</span>
+    }
+    <span class="keyword">public void</span> save(<span class="type">Coupon</span> c) {
+        db.save(c); <span class="comment">// 只管存</span>
+    }
+}
+
+<span class="comment">// --- Application 層：指揮流程 ---</span>
+<span class="keyword">public class</span> <span class="type">UseCouponService</span> {
+    <span class="keyword">public void</span> use(<span class="type">UserId</span> uid, <span class="type">CouponId</span> cid) {
+        <span class="type">Coupon</span> c = repo.find(cid);  <span class="comment">// 叫 Repo 拿</span>
+        c.use(uid.getId());         <span class="comment">// 叫 Domain 執行</span>
+        repo.save(c);               <span class="comment">// 叫 Repo 存</span>
+    }
+}
+</pre>
+                </div>
+            </div>
+
+            <div class="highlight-box success">
+                <h4>✅ 正確寫法的三大好處</h4>
+                <ul>
+                    <li>換掉 MongoDB 改用 MySQL？只改 Repository，Domain 的業務規則<strong>一行都不動</strong></li>
+                    <li>要測試「券不能被重複使用」？直接 <code>new Coupon()</code> 然後呼叫 <code>use()</code>，<strong>不需要啟動資料庫</strong></li>
+                    <li>增加新規則「VIP 才能用」？只改 <code>Coupon.use()</code>，其餘層<strong>不受影響</strong></li>
+                </ul>
+            </div>
+
+            <h3>常見混淆 Q&A</h3>
+
+            <div class="qa-block">
+                <div class="qa-q">Q：「找不到優惠券就拋出例外」放哪一層？</div>
+                <div class="qa-a">
+                    Repository 負責查，如果查無結果，拋出 <code>NotFoundException</code> 是 OK 的——因為「找不到」是一個技術事實。
+                    但如果業務說「找不到就當作已使用」，那這個<em>業務決定</em>應該在 Application 層處理，Repository 只負責告知「沒找到」這個事實。
+                </div>
+            </div>
+
+            <div class="qa-block">
+                <div class="qa-q">Q：「金額必須大於 0」這個驗證放哪裡？</div>
+                <div class="qa-a">
+                    這是兩種不同性質的驗證，分開放：<br>
+                    • <strong>Web 層</strong>（<code>@Min(1)</code>）：防止外部傳來非法格式，是輸入保護。<br>
+                    • <strong>Domain 層</strong>：「折扣金額不能超過商品原價」這種業務規則，只有在 Domain 才有這個上下文（因為需要知道「原價」這個業務概念）。<br>
+                    兩者可以並存，目的不同：Web 層防壞資料進來，Domain 層確保業務正確性。
+                </div>
+            </div>
+
+            <div class="qa-block">
+                <div class="qa-q">Q：資料庫的 Unique Constraint 算業務邏輯嗎？</div>
+                <div class="qa-a">
+                    不算。資料庫約束是「最後一道防線」的技術保護，不是業務邏輯的表達方式。業務規則「每人只能領一次優惠券」應該在 Domain 或 Application 明確寫出來，<strong>不應該讓資料庫拋出 DuplicateKeyException 來代替你表達業務規則</strong>——那樣的話，業務規則就藏在資料庫設定裡，看程式碼的人完全看不到。
+                </div>
+            </div>
+
+            <div class="qa-block">
+                <div class="qa-q">Q：「先查 Redis，沒有再查 MySQL」這個判斷屬於哪層？</div>
+                <div class="qa-a">
+                    Repository 層。這是<em>技術策略</em>（快取機制），跟業務規則無關。換快取方案或拿掉 Redis，只需要改 Repository；Service 不需要知道背後用了幾個儲存技術。
+                </div>
+            </div>
+
+            <div class="qa-block">
+                <div class="qa-q">Q：我怎麼知道某個 if 判斷是「業務」還是「技術」？</div>
+                <div class="qa-a">
+                    問你自己：<strong>「這個 if 裡面的條件，非技術人員（PM、老闆）能理解且認可嗎？」</strong><br>
+                    • 「優惠券已使用不能再用」→ PM 說得出來 → 業務規則 → Domain<br>
+                    • 「Redis TTL 過期就重查 MySQL」→ PM 不在乎怎麼查 → 技術細節 → Repository
+                </div>
+            </div>
+
         </section>
 
         <!-- Chapter 8 -->
